@@ -1,8 +1,11 @@
 import { router } from "expo-router";
 import { useSession } from "./hooks/session/authenticationProvider";
 import { useState } from "react";
-import { Button, Form, Input, Text, View } from "tamagui";
+import { Button, Form, Image, Input, Text, View } from "tamagui";
 import { LoginData } from "./types/signIn";
+import { TvIcon } from "lucide-react-native";
+import Svg, { Path } from "react-native-svg";
+import GoogleIcon from "../assets/images/google-icon.svg";
 
 export default function SignIn() {
     const { signIn } = useSession();
@@ -17,15 +20,17 @@ export default function SignIn() {
     return (
         <>
             <Form
-                alignItems="center"
                 gap="$2"
                 onSubmit={() => handleLogin()}
                 style={{
                     flex: 1,
                     justifyContent: "center",
                     alignItems: "center",
+                    paddingTop: 200,
                 }}
                 padding="$8">
+                <Text style={{ paddingBottom: 60, fontSize: 36 }}>Witamy</Text>
+
                 <Form.Trigger asChild>
                     <View>
                         <Input
@@ -51,9 +56,24 @@ export default function SignIn() {
                     </View>
                 </Form.Trigger>
                 <View paddingTop="$6">
-                    <Text onPress={() => router.replace("/sign-up")}>
+                    <Text
+                        onPress={() =>
+                            router.replace("/sign-up/(choices)/intro")
+                        }>
                         Don't have an account yet? click here to register
                     </Text>
+                    <Text style={{ alignSelf: "center", paddingTop: 40 }}>
+                        or sign in with
+                    </Text>
+                    <View
+                        style={{
+                            alignItems: "center",
+                            flexDirection: "row",
+                            justifyContent: "space-around",
+                            paddingTop: 40,
+                        }}>
+                        <GoogleIcon width={48} height={48} />
+                    </View>
                 </View>
             </Form>
         </>

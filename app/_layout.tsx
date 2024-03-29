@@ -14,6 +14,8 @@ import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import { SessionProvider } from "./hooks/session/authenticationProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ToastProvider, ToastViewport } from "@tamagui/toast";
+import CurrentToast from "./components/Toast";
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -58,12 +60,19 @@ function RootLayoutNav() {
 
     return (
         <TamaguiProvider config={config} defaultTheme={colorScheme as any}>
-            <SessionProvider>
-                <ThemeProvider
-                    value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-                    <Slot></Slot>
-                </ThemeProvider>
-            </SessionProvider>
+            <ToastProvider>
+                <SessionProvider>
+                    <ThemeProvider
+                        value={
+                            colorScheme === "dark" ? DarkTheme : DefaultTheme
+                        }>
+                        <ToastViewport top={50} left={0} right={0} />
+                        <CurrentToast />
+
+                        <Slot></Slot>
+                    </ThemeProvider>
+                </SessionProvider>
+            </ToastProvider>
         </TamaguiProvider>
     );
 }
