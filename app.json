@@ -4,6 +4,7 @@
         "slug": "expo-router-example",
         "version": "1.0.0",
         "orientation": "portrait",
+        "assets": ["./assets/fonts/"],
         "icon": "./assets/images/icon.png",
         "scheme": "myapp",
         "userInterfaceStyle": "automatic",
@@ -13,23 +14,58 @@
             "backgroundColor": "#ffffff"
         },
         "assetBundlePatterns": ["**/*"],
+        "packagerOpts": {
+            "config": "metro.config.js",
+            "sourceExts": [
+                "expo.ts",
+                "expo.tsx",
+                "expo.js",
+                "expo.jsx",
+                "ts",
+                "tsx",
+                "js",
+                "jsx",
+                "json",
+                "wasm",
+                "svg"
+            ]
+        },
         "ios": {
-            "supportsTablet": true
+            "supportsTablet": true,
+            "bundleIdentifier": "com.harmfulperson.exporouterexample"
         },
         "android": {
             "adaptiveIcon": {
                 "foregroundImage": "./assets/images/adaptive-icon.png",
                 "backgroundColor": "#ffffff"
-            }
+            },
+            "package": "com.harmfulperson.exporouterexample"
         },
         "web": {
             "bundler": "metro",
             "output": "static",
             "favicon": "./assets/images/favicon.png"
         },
-        "plugins": ["expo-router", "expo-font"],
+        "plugins": [
+            "expo-router",
+            "expo-font",
+            [
+                "expo-image-picker",
+                {
+                    "photosPermission": "The app accesses your photos to let you share them with your friends."
+                }
+            ]
+        ],
         "experiments": {
-            "typedRoutes": true
+            "typedRoutes": false
+        },
+        "extra": {
+            "router": {
+                "origin": false
+            },
+            "eas": {
+                "projectId": "74fcdc77-f634-4e25-8d9d-0a927efd5ab5"
+            }
         }
     }
 }

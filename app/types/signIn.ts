@@ -1,4 +1,4 @@
 export type LoginData = {
-    email: string;
+    phoneNumber: string;
     password: string;
 };

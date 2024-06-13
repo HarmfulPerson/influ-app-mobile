@@ -4,7 +4,7 @@ export const styles = StyleSheet.create({
     topBox: {
         display: "flex",
         width: "100%",
-        backgroundColor: Colors.light.background,
+        backgroundColor: Colors.primary.surface.default,
         height: 200,
         borderBottomLeftRadius: 10,
         borderBottomRightRadius: 10,

@@ -36,11 +36,15 @@ export function SessionProvider(props: React.PropsWithChildren) {
         <AuthContext.Provider
             value={{
                 signIn: async (loginData: LoginData) => {
-                    const response = await axios.post(
-                        "http://192.168.0.101:4000/api/v1/auth/signIn",
-                        loginData
-                    );
-                    setSession(response.data);
+                    try {
+                        const response = await axios.post(
+                            "http://192.168.0.101:4000/api/v1/auth/signIn",
+                            loginData
+                        );
+                        setSession(response.data);
+                    } catch (err) {
+                        console.log(err);
+                    }
                 },
                 signOut: () => {
                     setSession(null);

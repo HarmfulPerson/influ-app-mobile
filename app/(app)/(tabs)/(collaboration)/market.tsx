@@ -49,14 +49,14 @@ export default function Market() {
             page: `${page.current}`,
         });
         if (rowsPerPage * page.current > collaborations.data.count) return;
-        const response = await getData(
-            `/collaboration/all?${params.toString()}`,
-            session.data.tokens.token,
-            {
-                method: "GET",
-            }
-        );
-        setDataToDisplay([...dataToDisplay, ...response.data.rows]);
+        // const response = await getData(
+        //     `/collaboration/all?${params.toString()}`,
+        //     session.data.tokens.token,
+        //     {
+        //         method: "GET",
+        //     }
+        // );
+        // setDataToDisplay([...dataToDisplay, ...response.data.rows]);
     };
 
     return (

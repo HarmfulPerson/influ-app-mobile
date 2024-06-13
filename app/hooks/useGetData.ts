@@ -2,11 +2,10 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 import { useSession } from "./session/authenticationProvider";
 
-export const getData = async (
+export const getData = async <T>(
     url: string,
-    token: string,
     options?: AxiosRequestConfig
-) => {
+): Promise<T | void> => {
     try {
         const response: AxiosResponse = await axios(
             `http://192.168.0.101:4000/api/v1${url}`,
@@ -14,14 +13,12 @@ export const getData = async (
                 ...options,
                 headers: {
                     ...options?.headers,
-                    Authorization: `Bearer ${token}`,
                 },
             }
         );
         return response.data;
-    } catch (err) {
-        console.log(err);
-        return err;
+    } catch (err: unknown) {
+        if (axios.isAxiosError(err)) console.log(err);
     }
 };
 

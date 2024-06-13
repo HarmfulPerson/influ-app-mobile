@@ -3,17 +3,16 @@ import axios from "axios";
 import { useSession } from "./session/authenticationProvider";
 import { useToastController } from "@tamagui/toast";
 
-const useAuthPostData = () => {
-    const [response, setResponse] = useState(null);
+const useDeleteAuth = <T>() => {
+    const [response, setResponse] = useState<T | null>(null);
     const [error, setError] = useState(null);
     const { session } = useSession();
     const toast = useToastController();
 
-    const postData = async (url: string, data: any) => {
+    const deleteData = async (url: string) => {
         try {
-            const response = await axios.post(
+            const response = await axios.delete(
                 `http://192.168.0.101:4000/api/v1${url}`,
-                data,
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -23,7 +22,7 @@ const useAuthPostData = () => {
             );
             setResponse(response.data);
             toast.show("Sukces", {
-                message: "Pomyślnie dodano dane.",
+                message: "Pomyślnie usunięto dane.",
                 type: "success",
             });
         } catch (error: any) {
@@ -31,7 +30,7 @@ const useAuthPostData = () => {
         }
     };
 
-    return { response, error, postData };
+    return { response, error, deleteData };
 };
 
-export default useAuthPostData;
+export default useDeleteAuth;

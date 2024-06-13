@@ -37,3 +37,8 @@ export type Collaboration = {
     collaborationsUserReceived: Array<CollaborationUserReceived>;
     collaborationsUserSent: Array<CollaborationUserSent>;
 };
+
+export type CollaborationUserReceivedWithCollaboration =
+    CollaborationUserReceived & {
+        collaboration: Collaboration;
+    };

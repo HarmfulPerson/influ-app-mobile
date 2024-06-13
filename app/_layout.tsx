@@ -16,6 +16,7 @@ import { SessionProvider } from "./hooks/session/authenticationProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastProvider, ToastViewport } from "@tamagui/toast";
 import CurrentToast from "./components/Toast";
+import { usePushNotifications } from "./hooks/usePushNotifications";
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -32,8 +33,9 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
     const [interLoaded, interError] = useFonts({
-        Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
-        InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
+        Inter: require("../assets/fonts/Poppins-Regular.ttf"),
+        InterBold: require("../assets/fonts/Poppins-Bold.ttf"),
+        PoppinsSemiBold: require("../assets/fonts/Poppins-SemiBold.ttf"),
     });
     const queryClient = new QueryClient();
 
@@ -57,15 +59,12 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
     const colorScheme = useColorScheme();
-
+    const { expoPushToken, notification } = usePushNotifications();
     return (
         <TamaguiProvider config={config} defaultTheme={colorScheme as any}>
             <ToastProvider>
                 <SessionProvider>
-                    <ThemeProvider
-                        value={
-                            colorScheme === "dark" ? DarkTheme : DefaultTheme
-                        }>
+                    <ThemeProvider value={DefaultTheme}>
                         <ToastViewport top={50} left={0} right={0} />
                         <CurrentToast />
 

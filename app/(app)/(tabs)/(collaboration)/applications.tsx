@@ -1,11 +1,12 @@
 import { Stack } from "expo-router";
-import { Paragraph, Separator, Text, View, XStack } from "tamagui";
+import { ScrollView, Text, View, XStack } from "tamagui";
 import ScreenSlicer from "../../../components/ScreenSlicer";
 import { useAuthGetData } from "../../../hooks/useGetData";
-import { CollaborationUserReceived } from "../../../types/collaboration/market";
+import { CollaborationUserReceivedWithCollaboration } from "../../../types/collaboration/market";
 import { useEffect, useState } from "react";
 import { SOCIAL_STATUSES } from "../../../../constants/Collaboration";
 import { StyleSheet } from "react-native";
+import OwnApplicationCard from "../../../components/OwnApplicationCard";
 
 const styles = StyleSheet.create({
     container: {
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
 
 const Own = () => {
     const { fetchData } = useAuthGetData<{
-        rows: CollaborationUserReceived[];
+        rows: CollaborationUserReceivedWithCollaboration[];
         count: number;
     }>(`/collaboration/ownApplications`, {
         method: "GET",
@@ -45,23 +46,25 @@ const Own = () => {
         keyof typeof SOCIAL_STATUSES
     >(SOCIAL_STATUSES.remaining);
     const [ownApplications, setOwnApplications] = useState<{
-        [SOCIAL_STATUSES.accepted]: CollaborationUserReceived[];
-        [SOCIAL_STATUSES.rejected]: CollaborationUserReceived[];
-        [SOCIAL_STATUSES.remaining]: CollaborationUserReceived[];
+        [SOCIAL_STATUSES.accepted]: CollaborationUserReceivedWithCollaboration[];
+        [SOCIAL_STATUSES.rejected]: CollaborationUserReceivedWithCollaboration[];
+        [SOCIAL_STATUSES.remaining]: CollaborationUserReceivedWithCollaboration[];
     }>({
         [SOCIAL_STATUSES.accepted]: [],
         [SOCIAL_STATUSES.rejected]: [],
         [SOCIAL_STATUSES.remaining]: [],
     });
     const parseApplications = (
-        apiApplications: CollaborationUserReceived[]
+        apiApplications: CollaborationUserReceivedWithCollaboration[]
     ) => {
         const newApplications = { ...ownApplications };
-        apiApplications.forEach((application: CollaborationUserReceived) => {
-            newApplications[
-                application.status as keyof typeof ownApplications
-            ].push(application);
-        });
+        apiApplications.forEach(
+            (application: CollaborationUserReceivedWithCollaboration) => {
+                newApplications[
+                    application.status as keyof typeof ownApplications
+                ].push(application);
+            }
+        );
         setOwnApplications(newApplications);
     };
     useEffect(() => {
@@ -121,6 +124,15 @@ const Own = () => {
                     <Text>{ownApplications.rejected.length}</Text>
                 </View>
             </XStack>
+            <ScrollView>
+                {ownApplications[displayedOwnApplications].map(
+                    (
+                        application: CollaborationUserReceivedWithCollaboration
+                    ) => (
+                        <OwnApplicationCard application={application} />
+                    )
+                )}
+            </ScrollView>
         </View>
     );
 };
