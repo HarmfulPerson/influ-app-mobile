@@ -12,7 +12,7 @@ const useDeleteAuth = <T>() => {
     const deleteData = async (url: string) => {
         try {
             const response = await axios.delete(
-                `http://192.168.0.101:4000/api/v1${url}`,
+                `http://192.168.0.102:4000/api/v1${url}`,
                 {
                     headers: {
                         "Content-Type": "application/json",

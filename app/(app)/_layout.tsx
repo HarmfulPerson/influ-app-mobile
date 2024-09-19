@@ -21,6 +21,11 @@ export default function AppLayout() {
     return (
         <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+                name="addCollaboration"
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen name="addSocial" options={{ headerShown: false }} />
         </Stack>
     );
 }

@@ -1,256 +1,251 @@
-import {
-    Archive,
-    DollarSign,
-    EqualSquare,
-    List,
-    MessageCircle,
-    PlusCircle,
-    Radical,
-    Search,
-    Sheet as SheetIcon,
-    UserPlus,
-    Users,
-} from "lucide-react-native";
-import { Adapt, Circle, Dialog, Text, Sheet, View } from "tamagui";
+import { View, Button as TamaguiButton, ScrollView } from "tamagui";
+import Colors from "../../../constants/Colors";
+import React, { useState } from "react";
+import Input from "../../components/Input/Input";
+import { FilterIcon, PlusIcon, Search } from "lucide-react-native";
+import Button from "../../components/Button/Button";
+import FilterModal from "../../components/FilterModal/FilterModal";
+import { router } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
+import { useAuthGetData } from "../../hooks/useGetData";
+import { URL } from "../../../constants/urls";
+import { FlatList, ActivityIndicator } from "react-native";
+import useFilter from "../../hooks/useFilter";
+import { parseObjectToUrlParams } from "../../../utils/utils";
+import { Advertisement } from "../../types/advertisement";
+import { RequestData } from "../../types/common";
+import EachAdvertisement from "../../components/EachAdvertisement/EachAdvertisement";
+import { Category } from "../../types/category";
+import { SocialRange } from "../../types/social";
+import FilterDisplayer from "../../components/FilterDisplayer/FilterDisplayer";
 import { styles } from "./styles";
-import { useEffect, useState } from "react";
-import { Stack, router } from "expo-router";
 
-function ManageCollaborationMenu(props: {
-    hideMenuFunction: React.Dispatch<React.SetStateAction<MenuItems | null>>;
-}) {
-    const { hideMenuFunction } = props;
-
-    return (
-        <View marginTop="$20">
-            <Dialog.Close asChild>
-                <Circle
-                    size={100}
-                    padding="$3"
-                    margin="$5"
-                    onPress={() => {
-                        hideMenuFunction(null);
-                        router.replace(
-                            "/(app)/(tabs)/(manageCollaboration)/ongoing"
-                        );
-                    }}
-                    backgroundColor={"$blue1"}>
-                    <Radical size={32} />
-                    <Text fontSize="$1" textAlign="center">
-                        W trakcie
-                    </Text>
-                </Circle>
-            </Dialog.Close>
-            <Dialog.Close asChild>
-                <Circle
-                    padding="$3"
-                    size={100}
-                    margin="$5"
-                    onPress={() => {
-                        hideMenuFunction(null);
-                        router.replace(
-                            "/(app)/(tabs)/(manageCollaboration)/archive"
-                        );
-                    }}
-                    backgroundColor={"$blue1"}>
-                    <Archive size={32} />
-                    <Text fontSize="$1" textAlign="center">
-                        Archiwum
-                    </Text>
-                </Circle>
-            </Dialog.Close>
-        </View>
-    );
-}
-
-function StartCollaborationMenu(props: {
-    hideMenuFunction: React.Dispatch<React.SetStateAction<MenuItems | null>>;
-}) {
-    const { hideMenuFunction } = props;
-    return (
-        <View
-            style={{ position: "absolute", top: -150, left: 0 }}
-            marginTop="$20">
-            <View>
-                <Dialog.Close asChild>
-                    <Circle
-                        style={{ position: "absolute", left: 80, top: 90 }}
-                        size={100}
-                        onPress={() => {
-                            hideMenuFunction(null);
-                            router.replace(
-                                "/(app)/(tabs)/(collaboration)/market"
-                            );
-                        }}
-                        backgroundColor={"$blue1"}>
-                        <List size={32} />
-                        <Text fontSize="$1" textAlign="center">
-                            Giełda
-                        </Text>
-                        <Text fontSize="$1" textAlign="center">
-                            ogłoszeń
-                        </Text>
-                    </Circle>
-                </Dialog.Close>
-                <Dialog.Close asChild>
-                    <Circle
-                        style={{ position: "absolute", left: -30, top: 120 }}
-                        size={100}
-                        onPress={() => {
-                            hideMenuFunction(null);
-                            router.replace("/(app)/(tabs)/(collaboration)/add");
-                        }}
-                        backgroundColor={"$blue1"}>
-                        <PlusCircle size={32} />
-                        <Text fontSize="$1" textAlign="center">
-                            Dodaj
-                        </Text>
-                        <Text fontSize="$1" textAlign="center">
-                            współprace
-                        </Text>
-                    </Circle>
-                </Dialog.Close>
-            </View>
-            <View style={{ position: "absolute", bottom: -150, left: 0 }}>
-                <Dialog.Close asChild>
-                    <Circle
-                        style={{ position: "absolute", left: -50, top: 80 }}
-                        size={100}
-                        onPress={() => {
-                            hideMenuFunction(null);
-                            router.replace(
-                                "/(app)/(tabs)/(collaboration)/applications"
-                            );
-                        }}
-                        backgroundColor={"$blue1"}>
-                        <DollarSign size={32} />
-                        <Text fontSize="$1" textAlign="center">
-                            Aplikacje
-                        </Text>
-                    </Circle>
-                </Dialog.Close>
-                <Dialog.Close asChild>
-                    <Circle
-                        style={{ position: "absolute", left: 20, top: 170 }}
-                        size={100}
-                        onPress={() => {
-                            hideMenuFunction(null);
-                            router.replace(
-                                "/(app)/(tabs)/(collaboration)/invite"
-                            );
-                        }}
-                        backgroundColor={"$blue1"}>
-                        <UserPlus size={32} />
-                        <Text fontSize="$1" textAlign="center">
-                            Zaproś
-                        </Text>
-                        <Text fontSize="$1" textAlign="center">
-                            influencera
-                        </Text>
-                    </Circle>
-                </Dialog.Close>
-            </View>
-        </View>
-    );
-}
-
-type MenuItems =
-    | "communicator"
-    | "manageCollaborations"
-    | "reports"
-    | "startCooperation";
+const MENU_TYPES = {
+    advertisements: "advertisements",
+    collaborations: "collaborations",
+};
 
 export default function TabOneScreen() {
-    const [menuItem, setMenuItem] = useState<MenuItems | null>(null);
+    const [menuItem, setMenuItem] = useState(MENU_TYPES.advertisements);
+    const [count, setCount] = useState(0);
+
+    const { page, updatePage, rowsPerPage } = useFilter();
+    const { fetchData, isLoading } = useAuthGetData();
+    const [displayData, setDisplayData] = useState<Array<Advertisement>>([]);
+    const [pickedCategories, setPickedCategories] = useState<Category[]>([]);
+    const [filter, setFilter] = useState<{
+        sexes: Array<string>;
+        ageRange: Array<number>;
+        socialRanges: Array<SocialRange>;
+        categories: Category[];
+    }>({
+        sexes: [],
+        ageRange: [24, 60],
+        socialRanges: [],
+        categories: pickedCategories,
+    });
+
+    React.useEffect(() => {
+        handleFetchData();
+    }, [filter]);
+
+    const handleFetchData = () => {
+        fetchData<{ data: { count: number; rows: Array<Advertisement> } }>(
+            `${URL.advertisement}/all?${parseObjectToUrlParams({
+                ...stringifyFilterData(),
+                page: page.toString(),
+                rowsPerPage: rowsPerPage.toString(),
+            })}`
+        ).then(
+            (
+                response: RequestData<{
+                    count: number;
+                    rows: Array<Advertisement>;
+                }>
+            ) => {
+                setDisplayData(response.data.data.rows);
+                setCount(response.data.data.count);
+            }
+        );
+    };
+
+    const handleReachEnd = async () => {
+        if (count < rowsPerPage * page) return;
+        updatePage(page + 1);
+        const response: any = await fetchData<
+            RequestData<{ count: number; rows: Array<Advertisement> }>
+        >(
+            `${URL.advertisement}/all?${parseObjectToUrlParams({
+                ...stringifyFilterData(),
+                page: (page + 1).toString(),
+                rowsPerPage: rowsPerPage.toString(),
+            })}`
+        );
+        if (response.status === 200) {
+            updatePage(page + 1);
+            setDisplayData([...displayData, ...response?.data.data.rows]);
+        }
+    };
+
+    const stringifyFilterData = () => ({
+        ...(filter.ageRange[0] !== undefined && {
+            ageMin: `${filter.ageRange[0]}`,
+        }),
+        ...(filter.ageRange[1] !== undefined && {
+            ageMax: `${filter.ageRange[1]}`,
+        }),
+        sexes: JSON.stringify(filter.sexes),
+        ...(filter.socialRanges.length > 0 && {
+            socialRanges: JSON.stringify(
+                filter.socialRanges.map(
+                    (socialRange: SocialRange) => socialRange.uid
+                )
+            ),
+        }),
+        ...(pickedCategories.length > 0 && {
+            advertisementCategories: JSON.stringify(
+                pickedCategories.map((category: Category) => category.uid)
+            ),
+        }),
+    });
+
+    const renderFooter = () => {
+        if (!isLoading) return null;
+        return <ActivityIndicator size="large" />;
+    };
 
     return (
-        <View flex={1} alignItems="center">
-            <Dialog modal>
-                <View style={styles.containerTop}></View>
-                <View style={styles.containerBottom}>
-                    <View style={styles.menuItem}>
-                        <Circle size={120} backgroundColor={"$blue1"}>
-                            <MessageCircle size={48} />
-                            <Text fontSize="$1">Komunikator</Text>
-                        </Circle>
+        <LinearGradient
+            style={{ flex: 1 }}
+            colors={[Colors.primary.surface.lighter, Colors.primary.text.label]}
+            start={{ y: 0.0, x: 1.0 }}
+            end={{ y: 1.0, x: 0.0 }}>
+            <View flex={1} alignItems="center">
+                <View style={styles.topBarContainer}>
+                    <View style={styles.switchButtonsContainer}>
+                        <TamaguiButton
+                            onPress={() =>
+                                setMenuItem(MENU_TYPES.advertisements)
+                            }
+                            backgroundColor={
+                                menuItem === MENU_TYPES.advertisements
+                                    ? Colors.grayscale.surface.subtle
+                                    : Colors.grayscale.surface.darker
+                            }
+                            style={styles.switchDisplayedContentButton}>
+                            Ogłoszenia
+                        </TamaguiButton>
+                        <TamaguiButton
+                            onPress={() =>
+                                setMenuItem(MENU_TYPES.collaborations)
+                            }
+                            backgroundColor={
+                                menuItem === MENU_TYPES.collaborations
+                                    ? Colors.grayscale.surface.subtle
+                                    : Colors.grayscale.surface.darker
+                            }
+                            style={styles.switchDisplayedContentButton}>
+                            Współprace
+                        </TamaguiButton>
                     </View>
-                    <View style={styles.menuItem}>
-                        <Dialog.Trigger asChild>
-                            <Circle
-                                size={120}
-                                style={{
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                }}
-                                onPress={() =>
-                                    setMenuItem("manageCollaborations")
+                    <View style={styles.searchInput}>
+                        <View style={styles.searchInputContainer}>
+                            <Input
+                                placeholder="Szukaj..."
+                                iconLeft={
+                                    <Search
+                                        width={16}
+                                        height={16}
+                                        color={Colors.grayscale.border.disabled}
+                                    />
                                 }
-                                backgroundColor={"$blue1"}>
-                                <EqualSquare size={48} />
-                                <Text fontSize="$1" textAlign="center">
-                                    Zarządzaj publikacjami
-                                </Text>
-                            </Circle>
-                        </Dialog.Trigger>
+                            />
+                        </View>
+                        <View style={styles.adddAdvertisementButtonCotnainer}>
+                            <Button
+                                variant="primary"
+                                text=""
+                                onPress={() =>
+                                    router.push({
+                                        pathname:
+                                            menuItem ===
+                                            MENU_TYPES.advertisements
+                                                ? "(app)/addCollaboration"
+                                                : "(app)/addSocial",
+                                    })
+                                }
+                                icon={
+                                    <PlusIcon
+                                        color={Colors.grayscale.text.negative}
+                                        width={20}
+                                        height={20}
+                                    />
+                                }
+                                iconAlign="left"
+                                style={styles.addAdvertisementButton}
+                            />
+                        </View>
                     </View>
-                    <View style={styles.menuItem}>
-                        <Circle size={120} backgroundColor={"$blue1"}>
-                            <SheetIcon size={48} />
-                            <Text fontSize="$1">Raporty</Text>
-                        </Circle>
-                    </View>
-                    <View style={styles.menuItem}>
-                        <Dialog.Trigger asChild>
-                            <Circle
-                                onPress={() => setMenuItem("startCooperation")}
-                                size={120}
-                                backgroundColor={"$blue1"}>
-                                <Users size={48} />
-                                <Text fontSize="$1" textAlign="center">
-                                    Współprace
-                                </Text>
-                            </Circle>
-                        </Dialog.Trigger>
-                    </View>
+                    {menuItem === MENU_TYPES.advertisements && (
+                        <ScrollView
+                            horizontal={true}
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={styles.filterScrollContainer}
+                            style={{}}>
+                            <FilterModal
+                                filter={filter}
+                                setFilter={setFilter}
+                                pickedCategories={pickedCategories}
+                                setPickedCategories={setPickedCategories}
+                                triggerButton={
+                                    <Button
+                                        variant="secondary"
+                                        text=""
+                                        icon={
+                                            <FilterIcon
+                                                color={
+                                                    Colors.grayscale.text.body
+                                                }
+                                                fill={
+                                                    Colors.grayscale.text.body
+                                                }
+                                                width={16}
+                                                height={16}
+                                            />
+                                        }
+                                        iconAlign="left"
+                                        style={styles.iconFilter}
+                                    />
+                                }
+                            />
+                            <FilterDisplayer
+                                filters={{
+                                    ageMin: filter.ageRange[0],
+                                    ageMax: filter.ageRange[1],
+                                    advertisementSocialRanges:
+                                        filter.socialRanges,
+                                    sexes: filter.sexes,
+                                    categories: pickedCategories,
+                                }}
+                            />
+                        </ScrollView>
+                    )}
                 </View>
-                <Dialog.Portal>
-                    <Dialog.Close asChild>
-                        <Dialog.Overlay
-                            key="overlay"
-                            animation="slow"
-                            opacity={0.5}
-                            enterStyle={{ opacity: 0 }}
-                            exitStyle={{ opacity: 0 }}
-                        />
-                    </Dialog.Close>
-
-                    <Dialog.Content
-                        key="content"
-                        style={{ backgroundColor: "transparent" }}
-                        animateOnly={["transform", "opacity"]}
-                        animation={[
-                            "quick",
-                            {
-                                opacity: {
-                                    overshootClamping: true,
-                                },
-                            },
-                        ]}
-                        enterStyle={{ x: 0, y: -60, opacity: 0, scale: 0.9 }}
-                        exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}>
-                        {menuItem === "startCooperation" && (
-                            <StartCollaborationMenu
-                                hideMenuFunction={setMenuItem}
+                {menuItem === MENU_TYPES.advertisements && (
+                    <View flex={1} style={styles.flatListContainer}>
+                        {displayData && (
+                            <FlatList
+                                showsVerticalScrollIndicator={false}
+                                data={displayData}
+                                renderItem={EachAdvertisement}
+                                keyExtractor={(item: Advertisement) => item.uid}
+                                onEndReached={() => handleReachEnd()}
+                                ListFooterComponent={renderFooter}
                             />
                         )}
-                        {menuItem === "manageCollaborations" && (
-                            <ManageCollaborationMenu
-                                hideMenuFunction={setMenuItem}
-                            />
-                        )}
-                    </Dialog.Content>
-                </Dialog.Portal>
-            </Dialog>
-        </View>
+                    </View>
+                )}
+            </View>
+        </LinearGradient>
     );
 }

@@ -28,6 +28,10 @@ export default function SignUpLayout() {
                 name="steps/choosePhoto"
                 options={{ headerShown: false }}
             />
+            <Stack.Screen
+                name="steps/notifications"
+                options={{ headerShown: false }}
+            />
         </Stack>
     );
 }

@@ -4,7 +4,7 @@ import { LoginData } from "../../types/signIn";
 import axios from "axios";
 
 const AuthContext = React.createContext<{
-    signIn: (loginData: LoginData) => Promise<void>;
+    signIn: (loginData: LoginData) => Promise<any>;
     signOut: () => void;
     session?: any;
     isLoading: boolean;
@@ -38,10 +38,12 @@ export function SessionProvider(props: React.PropsWithChildren) {
                 signIn: async (loginData: LoginData) => {
                     try {
                         const response = await axios.post(
-                            "http://192.168.0.101:4000/api/v1/auth/signIn",
+                            "http://192.168.0.102:4000/api/v1/auth/signIn",
                             loginData
                         );
                         setSession(response.data);
+
+                        return response;
                     } catch (err) {
                         console.log(err);
                     }

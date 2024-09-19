@@ -7,7 +7,7 @@ import { LoginData } from "../types/signIn";
 import NotLoggedBackground from "../components/TopBox/NotLoggedBackground/NotLoggedBackground";
 import Colors from "../../constants/Colors";
 import CountryFlag from "react-native-country-flag";
-import { ChevronLeft, X } from "lucide-react-native";
+import { X } from "lucide-react-native";
 import GoogleSign from "../../assets/images/google-coloured.svg";
 import Button from "../components/Button/Button";
 import { styles } from "./styles";
@@ -20,11 +20,11 @@ export default function SignIn() {
         password: "",
     });
     const handleLogin = async () => {
-        await signIn({
+        const response = await signIn({
             ...loginData,
             phoneNumber: `${phoneNumberPrefix}${loginData.phoneNumber}`,
         });
-        router.replace("/");
+        if (response.status === 200) router.replace("/");
     };
     const handleChangePhoneNumber = (text: string) => {
         setLoginData({ ...loginData, phoneNumber: text });
@@ -151,8 +151,9 @@ export default function SignIn() {
                                 Kontynuuj z Google
                             </Text>
                         </TamaguiButton>
+
                         <Text
-                            onPress={() => console.log("XDDD")}
+                            onPress={() => router.push("/signUp")}
                             style={styles.dontHaveAccount}>
                             Nie posiadasz Konta?{" "}
                             <Text style={styles.dontHaveAccountRegister}>

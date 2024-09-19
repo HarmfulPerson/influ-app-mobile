@@ -96,6 +96,7 @@ export const styles = StyleSheet.create({
         height: 72,
         marginTop: 12,
         marginBottom: 12,
+        width: "100%",
     },
     backButton: {
         position: "absolute",

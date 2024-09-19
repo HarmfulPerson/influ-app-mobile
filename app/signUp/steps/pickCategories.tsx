@@ -1,5 +1,4 @@
 import { View, Text, Button as TamaguiButton } from "tamagui";
-import { Keyboard, TouchableWithoutFeedback } from "react-native";
 import { styles } from "../styles/pickCategories";
 import { useEffect, useState } from "react";
 import BackgroundSvg from "../../../assets/images/suseu-gradient-colour.svg";
@@ -7,64 +6,107 @@ import { LinearGradient } from "tamagui/linear-gradient";
 import { getData } from "../../hooks/useGetData";
 import Button from "../../components/Button/Button";
 import Colors from "../../../constants/Colors";
-import { CheckCircle, CheckCircle2, X } from "lucide-react-native";
-import { router } from "expo-router";
+import { CheckCircle2 } from "lucide-react-native";
+import { router, useLocalSearchParams } from "expo-router";
+import usePostData from "../../hooks/usePostData";
+import { useSession } from "../../hooks/session/authenticationProvider";
+import { CategoriesResponseData, Category } from "../../types/category";
+import { URL } from "../../../constants/urls";
+import { categoriesMapper } from "../../../constants/Categories";
 
-const url = "/categories";
-
-const categoriesMapper = {
-    fashion: "Moda",
-    beauty: "Uroda",
-    travel: "Podróże",
-    healthAndFitness: "Fitness i zdrowie",
-    food: "Jedzenie",
-    gaming: "Gaming",
-    technology: "Technologia",
-    educationAndScience: "Edukacja i nauka",
-    artAndCrafts: "Sztuka i rękodzieło",
-    music: "Muzyka",
-    entertainment: "Rozrywka",
-    lifestyle: "Lifestyle",
-    kidsAndFamily: "Rodzina i dzieci",
-    business: "Biznes",
-    animals: "Zwierzęta",
-    homeAndGarden: "Dom i ogród",
-};
-
-type Category = {
-    uid: string;
-    name: string;
-    createdAt: Date;
-    updatedAt: Date;
-};
-
-type CategoriesResponseData = {
+type RoleResponseData = {
     data: Array<Category>;
 };
 
+type Role = {
+    uid: string;
+    name: string;
+};
+
+type SearchParams = {
+    phoneNumber: string;
+    country: string;
+    email: string;
+    username: string;
+    password: string;
+    repeatPassword: string;
+};
+
 export default function PickCategories() {
-    const [categories, setCategories] = useState<string[]>([]);
-    const [pickedCategories, setPickedCategories] = useState<string[]>([]);
+    const { phoneNumber, country, email, username, password, repeatPassword } =
+        useLocalSearchParams() as SearchParams;
+    const { postData: signUp } = usePostData();
+    const { signIn } = useSession();
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [pickedCategories, setPickedCategories] = useState<Category[]>([]);
+    const [influencerRoles, setInfluencerRoles] = useState<Role[]>([]);
 
     useEffect(() => {
-        getData<CategoriesResponseData>(url).then(
+        getData<CategoriesResponseData>(URL.category).then(
             (res: CategoriesResponseData | void) => {
-                if (res)
-                    setCategories(
-                        res.data.map((category: Category) => category.name)
-                    );
+                if (res) setCategories(res.data);
+            }
+        );
+        getData<RoleResponseData>(URL.role).then(
+            (res: RoleResponseData | void) => {
+                if (res) setInfluencerRoles(res.data);
             }
         );
     }, []);
 
-    const handleCategoryClick = (category: string) => {
-        if (pickedCategories.includes(category))
-            setPickedCategories(
-                pickedCategories.filter(
-                    (presentCategory: string) => presentCategory !== category
-                )
+    const handleCategoryClick = (category: Category) => {
+        setPickedCategories((prevCategories) => {
+            const isPicked = prevCategories.some(
+                (item) => item.name === category.name
             );
-        else setPickedCategories([...pickedCategories, category]);
+
+            if (isPicked) {
+                return prevCategories.filter(
+                    (item) => item.name !== category.name
+                );
+            } else {
+                return [...prevCategories, category];
+            }
+        });
+    };
+
+    const getClientRoles = (roles: Role[]) =>
+        roles
+            .filter(
+                (roleItem: Role) =>
+                    roleItem.name === "client" || roleItem.name === "user"
+            )
+            .map((roleItem: Role) => ({ roleUid: roleItem.uid }));
+
+    const parseCategories = (categoriesToParse: Category[]) =>
+        categoriesToParse.map((category: Category) => ({
+            influencerCategoryUid: category.uid,
+        }));
+
+    const handleNavigateToNextPage = async () => {
+        await signUp("/auth/signUp", {
+            phoneNumber,
+            country,
+            username,
+            email,
+            password,
+            repeatPassword,
+            userCategories: parseCategories(pickedCategories),
+            userRoles: getClientRoles(influencerRoles),
+        });
+        await signIn({ password, phoneNumber });
+        router.push({
+            pathname: "/signUp/steps/choosePhoto",
+            params: {
+                phoneNumber,
+                country,
+                username,
+                email,
+                password,
+                repeatPassword,
+                influencerCategories: pickedCategories,
+            },
+        });
     };
 
     return (
@@ -82,11 +124,14 @@ export default function PickCategories() {
                     </Text>
                     {!!categories.length && (
                         <View style={styles.buttonsContainer}>
-                            {categories.map((category: string) => (
+                            {categories.map((category: Category) => (
                                 <LinearGradient
                                     style={styles.gradientStyle}
                                     colors={
-                                        pickedCategories.includes(category)
+                                        pickedCategories.some(
+                                            (item: Category) =>
+                                                item.name === category.name
+                                        )
                                             ? [
                                                   Colors.primary.surface
                                                       .lighter,
@@ -101,8 +146,9 @@ export default function PickCategories() {
                                             handleCategoryClick(category)
                                         }
                                         style={styles.eachCategoryButton}>
-                                        {pickedCategories.includes(
-                                            category
+                                        {pickedCategories.some(
+                                            (item: Category) =>
+                                                item.name === category.name
                                         ) && (
                                             <CheckCircle2
                                                 width={18}
@@ -113,16 +159,18 @@ export default function PickCategories() {
                                         <Text
                                             fontSize={14}
                                             style={
-                                                pickedCategories.includes(
-                                                    category
+                                                pickedCategories.some(
+                                                    (item: Category) =>
+                                                        item.name ===
+                                                        category.name
                                                 )
                                                     ? styles.pickedStyle
                                                     : styles.unpickedStyle
                                             }>
                                             {
                                                 categoriesMapper[
-                                                    category as keyof typeof categoriesMapper
-                                                ]
+                                                    category.name as keyof typeof categoriesMapper
+                                                ].name
                                             }
                                         </Text>
                                     </TamaguiButton>
@@ -135,8 +183,8 @@ export default function PickCategories() {
                     style={styles.nextStepButton}
                     variant="primary"
                     disabled={!pickedCategories.length}
-                    text="Dalej"
-                    onPress={() => router.push("/signUp/steps/choosePhoto")}
+                    text="Zarejestruj się"
+                    onPress={handleNavigateToNextPage}
                 />
             </View>
         </View>

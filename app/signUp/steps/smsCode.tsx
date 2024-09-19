@@ -10,15 +10,19 @@ import { useEffect, useRef, useState } from "react";
 import Button from "../../components/Button/Button";
 import { router } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
+import useSmsService from "../../hooks/useSmsService";
 
-export default function smsCode(props: any) {
-    const { phoneNumber } = useLocalSearchParams();
+export default function smsCode() {
+    const { phoneNumber } = useLocalSearchParams<{ phoneNumber: string }>();
+    const { useCode } = useSmsService();
     const firstDigitRef = useRef<Input>(null);
     const secondDigitRef = useRef<Input>(null);
     const thirdDigitRef = useRef<Input>(null);
     const fourthDigitRef = useRef<Input>(null);
     const fifthDigitRef = useRef<Input>(null);
     const sixthDigitRef = useRef<Input>(null);
+    const hiddenRef = useRef<Input>(null);
+
     const [digitController, setDigitController] = useState<{
         input1: string;
         input2: string;
@@ -54,8 +58,7 @@ export default function smsCode(props: any) {
     };
 
     useEffect(() => {
-        firstDigitRef.current?.focus();
-        console.log(Object.values(digitController).join("").length);
+        hiddenRef.current?.focus();
     }, []);
 
     const handleKeyPress = (
@@ -85,6 +88,34 @@ export default function smsCode(props: any) {
         }
     };
 
+    const handleNavigateToNextPage = async () => {
+        if (!phoneNumber) return;
+        const response = await useCode({
+            phoneNumber,
+            code: Object.values(digitController).join(""),
+        });
+        if (response?.status === 200)
+            router.push({
+                pathname: "/signUp/steps/registrationCountry",
+                params: { phoneNumber },
+            });
+    };
+
+    const handleSmsIncomingMessage = (text: string) => {
+        if (text.length === 6) {
+            const splitted = text.split("");
+            setDigitController({
+                input1: splitted[0],
+                input2: splitted[1],
+                input3: splitted[2],
+                input4: splitted[3],
+                input5: splitted[4],
+                input6: splitted[5],
+            });
+            Keyboard.dismiss();
+        }
+    };
+
     return (
         <View style={{ flex: 1 }}>
             <NotLoggedBackground hasBackButton dontDisplayLogo={true} />
@@ -95,14 +126,31 @@ export default function smsCode(props: any) {
                     <View>
                         <Text style={styles.titleText}>6-cio cyfrowy kod</Text>
                         <Text style={styles.infoText}>
-                            Kod wyslany do +48 {phoneNumber} jesli nie posiadasz
+                            Kod wyslany do {phoneNumber} jesli nie posiadasz
                             konta
                         </Text>
                         <View style={styles.digitContainer}>
                             <Input
+                                textContentType="oneTimeCode"
+                                ref={hiddenRef}
+                                keyboardType="numeric"
+                                onChangeText={(text: string) =>
+                                    handleSmsIncomingMessage(text)
+                                }
+                                style={{
+                                    width: 1,
+                                    height: 1,
+                                    zIndex: -99,
+                                    position: "absolute",
+                                    left: -999,
+                                    top: -999,
+                                }}
+                            />
+                            <Input
                                 ref={firstDigitRef}
                                 maxLength={1}
                                 keyboardType="numeric"
+                                value={digitController.input1}
                                 onChangeText={(text) =>
                                     handleInputChange(
                                         text,
@@ -120,6 +168,7 @@ export default function smsCode(props: any) {
                             <Input
                                 maxLength={1}
                                 ref={secondDigitRef}
+                                value={digitController.input2}
                                 onChangeText={(text) =>
                                     handleInputChange(
                                         text,
@@ -145,6 +194,7 @@ export default function smsCode(props: any) {
                             <Input
                                 ref={thirdDigitRef}
                                 maxLength={1}
+                                value={digitController.input3}
                                 onChangeText={(text) =>
                                     handleInputChange(
                                         text,
@@ -171,6 +221,7 @@ export default function smsCode(props: any) {
                             <Input
                                 ref={fourthDigitRef}
                                 maxLength={1}
+                                value={digitController.input4}
                                 onChangeText={(text) =>
                                     handleInputChange(
                                         text,
@@ -195,6 +246,7 @@ export default function smsCode(props: any) {
                                 style={styles.digitInput}></Input>
                             <Input
                                 ref={fifthDigitRef}
+                                value={digitController.input5}
                                 onChangeText={(text) =>
                                     handleInputChange(
                                         text,
@@ -242,6 +294,7 @@ export default function smsCode(props: any) {
                                     )
                                 }
                                 keyboardType="numeric"
+                                value={digitController.input6}
                                 style={styles.digitInput}></Input>
                         </View>
                     </View>
@@ -249,9 +302,7 @@ export default function smsCode(props: any) {
                         style={styles.nextStepButton}
                         variant="primary"
                         text="Zarejestruj się"
-                        onPress={() =>
-                            router.push("/signUp/steps/registrationCountry")
-                        }
+                        onPress={handleNavigateToNextPage}
                         disabled={!canProceed()}
                     />
                 </View>

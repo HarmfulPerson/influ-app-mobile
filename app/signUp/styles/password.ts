@@ -28,6 +28,7 @@ export const styles = StyleSheet.create({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        padding: 12,
     },
     inputLabel: {
         marginTop: 24,

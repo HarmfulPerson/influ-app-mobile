@@ -12,7 +12,7 @@ const useAuthPostData = () => {
     const postData = async (url: string, data: any) => {
         try {
             const response = await axios.post(
-                `http://192.168.0.101:4000/api/v1${url}`,
+                `http://192.168.0.102:4000/api/v1${url}`,
                 data,
                 {
                     headers: {
@@ -26,6 +26,7 @@ const useAuthPostData = () => {
                 message: "Pomyślnie dodano dane.",
                 type: "success",
             });
+            return response;
         } catch (error: any) {
             setError(error);
         }

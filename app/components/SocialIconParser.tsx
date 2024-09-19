@@ -11,17 +11,18 @@ const SocialIcon = (props: {
     social: string;
     width: number;
     height: number;
+    fill?: string;
 }) => {
-    const { social, width, height } = props;
+    const { social, width, height, fill } = props;
     const socialIconParser = {
-        tiktok: <TiktokIcon width={width} height={height} />,
-        facebook: <FacebookIcon width={width} height={height} />,
-        instagram: <InstagramIcon width={width} height={height} />,
-        youtube: <YoutubeIcon width={width} height={height} />,
-        twitch: <TwitchIcon width={width} height={height} />,
-        x: <XIcon width={width} height={height} />,
-        linkedin: <LinkedinIcon width={width} height={height} />,
-        spotify: <SpotifyIcon width={width} height={height} />,
+        tiktok: <TiktokIcon width={width} height={height} fill={fill} />,
+        facebook: <FacebookIcon width={width} height={height} fill={fill} />,
+        instagram: <InstagramIcon width={width} height={height} fill={fill} />,
+        youtube: <YoutubeIcon width={width} height={height} fill={fill} />,
+        twitch: <TwitchIcon width={width} height={height} fill={fill} />,
+        x: <XIcon width={width} height={height} fill={fill} />,
+        linkedin: <LinkedinIcon width={width} height={height} fill={fill} />,
+        spotify: <SpotifyIcon width={width} height={height} fill={fill} />,
     };
 
     return <>{socialIconParser[social as keyof typeof socialIconParser]}</>;

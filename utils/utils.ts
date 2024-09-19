@@ -8,3 +8,9 @@ export const nullAllKeys = <T extends Record<string, any>>(obj: T): T => {
 
     return returnedNulledObject;
 };
+
+export const parseBooleanStringToBoolean = (string: string) =>
+    string === "true" ? true : false;
+
+export const parseObjectToUrlParams = (object: Record<string, string>) =>
+    new URLSearchParams(object).toString();

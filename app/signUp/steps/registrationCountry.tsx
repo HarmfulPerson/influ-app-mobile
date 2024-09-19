@@ -6,11 +6,13 @@ import { SelectDemoItem } from "../../components/Dropdown/Dropdown";
 import { useState } from "react";
 import Button from "../../components/Button/Button";
 import { countries } from "../../../constants/Countries";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
 type Country = { name: string; name_en: string; code: string };
 
 export default function RegistrationCountry() {
+    const { phoneNumber } = useLocalSearchParams();
+
     const polandCountry = countries.find(
         (country: Country) => country.name === "Polska"
     )?.name as string;
@@ -19,6 +21,7 @@ export default function RegistrationCountry() {
     const handlePickCountry = (country: string) => {
         setPickedCountry(country);
     };
+
     return (
         <View style={{ flex: 1 }}>
             <NotLoggedBackground hasBackButton dontDisplayLogo={true} />
@@ -65,7 +68,13 @@ export default function RegistrationCountry() {
                             variant="primary"
                             text="Zarejestruj się"
                             onPress={() =>
-                                router.push("/signUp/steps/userData")
+                                router.push({
+                                    pathname: "/signUp/steps/userData",
+                                    params: {
+                                        phoneNumber,
+                                        country: pickedCountry,
+                                    },
+                                })
                             }
                         />
                     </View>

@@ -3,7 +3,7 @@ import Colors from "../../../constants/Colors";
 import { StyleSheet } from "react-native";
 import { ChevronLeft } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useState } from "react";
+import React, { useState } from "react";
 type ButtonProps = {
     style?: any;
     disabled?: boolean;
@@ -14,6 +14,7 @@ type ButtonProps = {
     size?: "small" | "medium" | "large";
     onPress?: () => any;
     rounded?: "normal" | "full";
+    ref?: any;
 };
 
 const styles = StyleSheet.create({
@@ -75,7 +76,7 @@ const colorType = {
 
 const smallSizes = StyleSheet.create({
     buttonWidth: {
-        minWidth: 67,
+        width: 67,
         height: 44,
     },
     fontSize: {
@@ -85,7 +86,7 @@ const smallSizes = StyleSheet.create({
 
 const mediumSizes = StyleSheet.create({
     buttonWidth: {
-        minWidth: 101,
+        width: 101,
         height: 56,
     },
     fontSize: {
@@ -95,7 +96,7 @@ const mediumSizes = StyleSheet.create({
 
 const largeSizes = StyleSheet.create({
     buttonWidth: {
-        minWidth: 101,
+        width: 101,
         height: 72,
     },
     fontSize: {
@@ -124,6 +125,7 @@ const Button = (props: ButtonProps) => {
         rounded = "normal",
         size,
         icon,
+        ref,
         onPress,
         ...restProps
     } = props;
@@ -167,6 +169,7 @@ const Button = (props: ButtonProps) => {
                 styles.noMarginPadding,
                 style,
             ]}
+            ref={ref}
             onPressIn={handlePressIn}
             onPressOut={handlePressOut}>
             {!disabled ? (
@@ -175,13 +178,13 @@ const Button = (props: ButtonProps) => {
                     colors={gradientColors}
                     start={{ y: 0.0, x: 1.0 }}
                     end={{ y: 1.0, x: 0.0 }}>
-                    {iconAlign && iconAlign === "left" && <ChevronLeft />}
+                    {iconAlign && iconAlign === "left" && <>{icon}</>}
                     <Text
                         fontSize={fontSize}
                         style={colorType[variant].textColor}>
                         {text}
                     </Text>
-                    {iconAlign && iconAlign === "right" && <ChevronLeft />}
+                    {iconAlign && iconAlign === "right" && <>{icon}</>}
                 </LinearGradient>
             ) : (
                 <Text

@@ -1,8 +1,12 @@
 import { Link, Tabs } from "expo-router";
-import { Pressable } from "react-native";
-import { Text } from "tamagui";
+import { Pressable, StyleSheet, ImageBackground } from "react-native";
+import { Text, View } from "tamagui";
 import { useSession } from "../../hooks/session/authenticationProvider";
-import { Home, Info, Mail, Settings, User } from "lucide-react-native";
+import Colors from "../../../constants/Colors";
+import MenuHome from "../../../assets/images/menu-home.svg";
+import MenuSearch from "../../../assets/images/menu-search.svg";
+import MenuSuseu from "../../../assets/images/menu-suseu.svg";
+import MenuMessage from "../../../assets/images/menu-message.svg";
 
 export default function TabLayout() {
     const { signOut } = useSession();
@@ -13,27 +17,36 @@ export default function TabLayout() {
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: "red",
+                tabBarStyle: {
+                    backgroundColor: "black",
+                    borderTopWidth: 0,
+                },
+            }}
+            sceneContainerStyle={{
+                backgroundColor: Colors.grayscale.surface.subtle,
             }}>
             <Tabs.Screen
-                name="three"
+                name="home"
                 options={{
-                    title: "Wiadomości",
-                    tabBarIcon: ({ color }) => <Mail />,
+                    tabBarIcon: ({ color }) => <MenuHome />,
+                    tabBarShowLabel: false,
+                    headerShown: false,
                 }}
             />
             <Tabs.Screen
-                name="two"
+                name="search"
                 options={{
-                    title: "Informacje",
-                    tabBarIcon: ({ color }) => <Info />,
+                    tabBarIcon: ({ color }) => <MenuSearch />,
+                    tabBarShowLabel: false,
+                    headerShown: false,
                 }}
             />
             <Tabs.Screen
                 name="index"
                 options={{
-                    title: "Główna",
-                    tabBarIcon: ({ color }) => <Home />,
+                    tabBarShowLabel: false,
+                    headerShown: false,
+                    tabBarIcon: ({ color }) => <MenuSuseu />,
                     headerRight: () => (
                         <Link href="/sign-in" asChild>
                             <Pressable onPress={handleInfoIconPress}>
@@ -44,33 +57,45 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
-                name="four"
+                name="messages"
                 options={{
-                    title: "Ustawienia",
-                    tabBarIcon: ({ color }) => <Settings />,
-                }}
-            />
-            <Tabs.Screen
-                name="five"
-                options={{
-                    title: "Profil",
-                    tabBarIcon: ({ color }) => <User />,
-                }}
-            />
-            <Tabs.Screen
-                name="(collaboration)"
-                options={{
+                    tabBarShowLabel: false,
+                    tabBarIcon: ({ color }) => <MenuMessage />,
                     headerShown: false,
-                    href: null,
                 }}
             />
             <Tabs.Screen
-                name="(manageCollaboration)"
+                name="settings"
                 options={{
+                    tabBarIcon: ({ color }) => (
+                        <View style={styles.container}>
+                            <ImageBackground
+                                source={require("../../../assets/images/menu-user-gopher.png")}
+                                style={styles.circle}
+                                imageStyle={styles.circleImage}>
+                                {/* Optionally add other components inside the circle */}
+                            </ImageBackground>
+                        </View>
+                    ),
+                    tabBarShowLabel: false,
                     headerShown: false,
-                    href: null,
                 }}
             />
         </Tabs>
     );
 }
+const styles = StyleSheet.create({
+    container: {
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    circle: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        overflow: "hidden",
+    },
+    circleImage: {
+        borderRadius: 20,
+    },
+});

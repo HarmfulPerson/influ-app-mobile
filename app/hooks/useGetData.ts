@@ -8,7 +8,7 @@ export const getData = async <T>(
 ): Promise<T | void> => {
     try {
         const response: AxiosResponse = await axios(
-            `http://192.168.0.101:4000/api/v1${url}`,
+            `http://192.168.0.102:4000/api/v1${url}`,
             {
                 ...options,
                 headers: {
@@ -22,22 +22,20 @@ export const getData = async <T>(
     }
 };
 
-export const useAuthGetData = <T>(
-    url: string,
-    options?: AxiosRequestConfig,
-    functionName?: string
-) => {
-    const [data, setData] = useState<{ data: T } | null>(null);
+export const useAuthGetData = () => {
+    const [data, setData] = useState<{ data: any } | null>(null);
     const [isLoading, setIsLoading] = useState<any | null>(false);
     const [error, setError] = useState<any | null>(null);
     const { session } = useSession();
 
-    const fetchData = async () => {
+    const fetchData = async <T>(
+        url: string,
+        options?: AxiosRequestConfig
+    ): Promise<AxiosResponse<T>> => {
         setIsLoading(true);
-        setData(null);
         try {
             const response: AxiosResponse = await axios(
-                `http://192.168.0.101:4000/api/v1${url}`,
+                `http://192.168.0.102:4000/api/v1${url}`,
                 {
                     ...options,
                     headers: {
@@ -46,13 +44,13 @@ export const useAuthGetData = <T>(
                     },
                 }
             );
-            setData(response.data);
-            return response.data;
+            setIsLoading(false);
+            return response;
         } catch (err) {
             setError(err);
-            return err;
+            throw err;
         }
     };
 
-    return { data, isLoading, error, [functionName || "fetchData"]: fetchData };
+    return { data, isLoading, error, fetchData };
 };
