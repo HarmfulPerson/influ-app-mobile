@@ -2,24 +2,15 @@ import { ScrollView, Text, View } from "tamagui";
 import { Advertisement } from "../../types/advertisement";
 import Colors from "../../../constants/Colors";
 import { styles } from "./styles";
-import { Calendar, Tv } from "lucide-react-native";
+import { Calendar, DatabaseIcon, Tv } from "lucide-react-native";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
-import FilterDisplayer from "../FilterDisplayer/FilterDisplayer";
 
-export default function EachAdvertisement(item: {
+export default function EachAdvertisementDashboard(item: {
     index: number;
     item: Advertisement;
 }) {
     const { item: advertisement } = item;
-    const filters = {
-        ageMin: advertisement.ageMin,
-        ageMax: advertisement.ageMax,
-        sexes: advertisement.sexes,
-        advertisementSocialRanges: advertisement.socialRanges,
-        categories: advertisement.influencerCategories,
-        isPublishedByAdvertiser: advertisement.isPublishedByAdvertiser,
-    };
     return (
         <View key={advertisement.uid} style={styles.wrapper}>
             <View style={styles.titleContainer}>
@@ -29,23 +20,8 @@ export default function EachAdvertisement(item: {
                         {advertisement.createdByUser.nameOfCompany}
                     </Text>
                     <Text style={styles.title}>{advertisement.title}</Text>
-                    <Text
-                        ellipsizeMode="tail"
-                        numberOfLines={5}
-                        style={styles.description}>
-                        {advertisement.description}
-                    </Text>
                 </View>
             </View>
-            <View
-                style={{
-                    height: 52,
-                    width: "100%",
-                    justifyContent: "flex-start",
-                }}>
-                <FilterDisplayer isFromList filters={filters} />
-            </View>
-
             <View style={styles.platformAndPublicationContainer}>
                 <View style={styles.platformsContainer}>
                     <View>
@@ -70,7 +46,7 @@ export default function EachAdvertisement(item: {
                         </ScrollView>
                     </View>
                 </View>
-                <View style={styles.publicationContainer}>
+                <View style={styles.calendarContainer}>
                     <View style={styles.calendar}>
                         <Calendar
                             height={16}
@@ -78,7 +54,7 @@ export default function EachAdvertisement(item: {
                             color={Colors.grayscale.surface.disabled}
                         />
                     </View>
-                    <View style={styles.publicationTextContainer}>
+                    <View style={styles.publicationContainer}>
                         <Text style={styles.publicationText}>
                             Data publikacji
                         </Text>

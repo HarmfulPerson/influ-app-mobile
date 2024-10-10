@@ -21,10 +21,11 @@ type Props = {
         categories: Array<Category>;
         isPublishedByAdvertiser?: boolean;
     };
+    isFromList?: boolean;
 };
 
 const FilterDisplayer = (props: Props) => {
-    const { filters } = props;
+    const { filters, isFromList = false } = props;
 
     const combinePeopleText = {
         icon: Users,
@@ -66,9 +67,18 @@ const FilterDisplayer = (props: Props) => {
         return (
             <Button
                 pressStyle={{ borderColor: Colors.grayscale.border.default }}
-                style={styles.eachPill}>
-                <IconComponent color="white" width={10} height={10} />
-                <Text style={{ fontSize: 10 }}>{filter.name}</Text>
+                style={isFromList ? styles.eachListPill : styles.eachPill}>
+                <IconComponent
+                    color={isFromList ? Colors.grayscale.text.caption : "white"}
+                    width={10}
+                    height={10}
+                    strokeWidth={2}
+                />
+                <Text
+                    color={isFromList ? Colors.grayscale.text.caption : "white"}
+                    style={{ fontSize: 10 }}>
+                    {filter.name}
+                </Text>
             </Button>
         );
     };

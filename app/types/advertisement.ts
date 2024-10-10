@@ -1,3 +1,5 @@
+import { User } from "./user";
+
 export type Advertisement = {
     advertisementUserReceived: any;
     advertisementsUserSent: any;
@@ -13,7 +15,7 @@ export type Advertisement = {
     uid: string;
     updatedAt: Date;
     userUid: string;
-    createdByUser: any;
+    createdByUser: User;
     socialRanges: any;
     influencerCategories: any;
 };

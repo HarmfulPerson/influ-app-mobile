@@ -1,0 +1,2 @@
+export const returnUserImage = (fileName: string) =>
+    `http://192.168.0.103:4000/userAvatar/${fileName}`;
