@@ -24,4 +24,13 @@ export const styles = StyleSheet.create({
         marginBottom: 0,
         flexDirection: "column",
     },
+    eachListPill: {
+        borderRadius: 10,
+        height: 22,
+        marginTop: 2,
+        marginBottom: 2,
+        marginRight: 8,
+        backgroundColor: Colors.grayscale.surface.default,
+        fontSize: 10,
+    },
 });
