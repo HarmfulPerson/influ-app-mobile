@@ -10,11 +10,6 @@ import { CircleUserRound, MailIcon, SearchIcon } from "lucide-react-native";
 export default function TabLayout() {
     const { signOut } = useSession();
 
-    const handleInfoIconPress = () => {
-        signOut();
-    };
-    const iconInactiveColor = Colors.grayscale.surface.disabled;
-
     return (
         <View style={styles.tabsContainer}>
             <Tabs
@@ -145,7 +140,7 @@ export default function TabLayout() {
                     }}
                 />
                 <Tabs.Screen
-                    name="Advertisement"
+                    name="AdvertisementList"
                     options={{
                         tabBarButton: () => null,
                         headerShown: false,
@@ -171,16 +166,6 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         backgroundColor: Colors.grayscale.surface.default,
         justifyContent: "center",
-    },
-    activeIndicator: {
-        width: 70,
-        height: 56,
-        backgroundColor: Colors.grayscale.surface.subtle, // Color for the rectangle
-        borderRadius: 12,
-        position: "absolute",
-        top: 0,
-        left: 0,
-        zIndex: -1,
     },
     tabBar: {
         backgroundColor: Colors.grayscale.surface.default,

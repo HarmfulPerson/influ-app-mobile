@@ -25,8 +25,12 @@ export const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
-    welcomeMessage: { fontSize: 20 },
-    welcomeMessageUser: { fontSize: 20, fontFamily: "PoppinsSemiBold" },
+    welcomeMessage: { fontSize: 20, color: Colors.grayscale.text.title },
+    welcomeMessageUser: {
+        fontSize: 20,
+        fontFamily: "PoppinsSemiBold",
+        color: Colors.grayscale.text.title,
+    },
     notificationsButton: { height: 44, width: 44 },
     navigationContainer: {
         marginTop: 18,

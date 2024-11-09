@@ -6,6 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
 type ButtonProps = {
     style?: any;
+    textStyle?: any;
     disabled?: boolean;
     text: string;
     variant: "primary" | "secondary";
@@ -127,6 +128,7 @@ const Button = (props: ButtonProps) => {
         icon,
         ref,
         onPress,
+        textStyle,
         ...restProps
     } = props;
     const [isPressed, setIsPressed] = useState(false);
@@ -181,7 +183,7 @@ const Button = (props: ButtonProps) => {
                     {iconAlign && iconAlign === "left" && <>{icon}</>}
                     <Text
                         fontSize={fontSize}
-                        style={colorType[variant].textColor}>
+                        style={[colorType[variant].textColor, textStyle]}>
                         {text}
                     </Text>
                     {iconAlign && iconAlign === "right" && <>{icon}</>}
@@ -189,11 +191,12 @@ const Button = (props: ButtonProps) => {
             ) : (
                 <Text
                     fontSize={fontSize}
-                    style={
+                    style={[
                         disabled
                             ? disabledStyles.disabledColor
-                            : colorType[variant].textColor
-                    }>
+                            : colorType[variant].textColor,
+                        textStyle,
+                    ]}>
                     {text}
                 </Text>
             )}

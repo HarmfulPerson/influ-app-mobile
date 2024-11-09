@@ -122,7 +122,7 @@ const Index = () => {
 
     const navigateToAdvertisement = () =>
         router.push({
-            pathname: "/Advertisement",
+            pathname: "/AdvertisementList",
         });
 
     return (

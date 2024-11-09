@@ -2,7 +2,7 @@ import { ScrollView, Text, View } from "tamagui";
 import { Advertisement } from "../../types/advertisement";
 import Colors from "../../../constants/Colors";
 import { styles } from "./styles";
-import { Calendar, DatabaseIcon, Tv } from "lucide-react-native";
+import { Calendar, Tv } from "lucide-react-native";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
 

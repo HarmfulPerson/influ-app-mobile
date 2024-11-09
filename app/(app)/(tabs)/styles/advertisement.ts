@@ -1,6 +1,5 @@
 import { StyleSheet } from "react-native";
 import Colors from "../../../../constants/Colors";
-import { SearchIcon } from "lucide-react-native";
 export const styles = StyleSheet.create({
     footer: {
         height: 60,
@@ -12,13 +11,19 @@ export const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: Colors.grayscale.surface.darker,
     },
-    darkShutter: {
-        height: 100,
+    flatList: {
         width: "100%",
-        position: "absolute",
-        zIndex: -1,
-        top: 0,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    darkShutter: {
         backgroundColor: Colors.grayscale.surface.darker,
+        position: "absolute",
+        bottom: -30,
+        height: 600,
+        left: 0,
+        zIndex: -1,
+        width: "120%",
     },
     sectionList: {
         justifyContent: "flex-start",
@@ -80,7 +85,14 @@ export const styles = StyleSheet.create({
         paddingTop: 8,
         paddingRight: 16,
         paddingLeft: 16,
+        position: "relative",
         shadowOpacity: 0.15,
+    },
+    gradientStyle: {
+        flex: 1,
+        flexGrow: 1,
+        justifyContent: "center",
+        alignItems: "center",
     },
     flatListContainer: {
         width: "90%",
@@ -102,13 +114,26 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 16,
         backgroundColor: Colors.grayscale.surface.darker,
         marginTop: 0,
+        paddingTop: 16,
+        paddingBottom: 16,
+        borderBottomLeftRadius: 24,
+        borderBottomRightRadius: 24,
+    },
+    container: {
+        flexGrow: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        overflow: "hidden",
+        width: "100%",
+    },
+    stickyHeaderContainer: {
+        backgroundColor: Colors.grayscale.surface.darker,
         borderBottomLeftRadius: 24,
         borderBottomRightRadius: 24,
     },
     searchIcon: {
         height: 44,
         width: 44,
-        marginBottom: 16,
         justifyContent: "flex-end",
         alignItems: "flex-end",
     },

@@ -23,7 +23,7 @@ const AddButtonList = (props: AddButtonListProps) => {
             iconAlign="right"
             style={{
                 position: "absolute",
-                bottom: 100,
+                bottom: 84,
                 right: 20,
                 width: 72,
                 height: 72,

@@ -27,7 +27,6 @@ export const useAuthGetData = () => {
     const [isLoading, setIsLoading] = useState<any | null>(false);
     const [error, setError] = useState<any | null>(null);
     const { session } = useSession();
-
     const fetchData = async <T>(
         url: string,
         options?: AxiosRequestConfig
@@ -40,7 +39,11 @@ export const useAuthGetData = () => {
                     ...options,
                     headers: {
                         ...options?.headers,
-                        Authorization: `Bearer ${session.data.tokens.token}`,
+                        Authorization: `Bearer ${
+                            session?.data.tokens.token
+                                ? session.data.tokens.token
+                                : 1
+                        }`,
                     },
                 }
             );
