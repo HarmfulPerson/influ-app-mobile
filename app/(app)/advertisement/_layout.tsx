@@ -1,7 +1,6 @@
 import { View, Text } from "tamagui";
-import Colors from "../../../constants/Colors";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet } from "react-native";
+import { ActivityIndicator } from "react-native";
 import Button from "../../components/Button/Button";
 import Information from "./common/information";
 import {
@@ -20,6 +19,7 @@ import { User } from "../../types/user";
 import InfluencerPicker from "../../components/InfluencerPicker/InfluencerPicker";
 import { useSession } from "../../hooks/session/authenticationProvider";
 import useAuthPostData from "../../hooks/usePostAuthData";
+import { styles } from "./styles/layout";
 
 enum CHOSEN_MENU {
     information = "information",
@@ -31,10 +31,8 @@ export type PlatformAndInfluencer = {
     influencer: User | null;
 };
 
-type Props = {
-    advertisement: Advertisement;
-};
-export default function AdvertisementDisplay(props: Props) {
+
+export default function AdvertisementDisplay() {
     const { advertisementUid } = useLocalSearchParams();
     const { fetchData: getAdvertisement, isLoading } = useAuthGetData();
     const { postData: inviteUser } = useAuthPostData();
@@ -157,7 +155,7 @@ export default function AdvertisementDisplay(props: Props) {
     const bottomArea = (
         <>
             {chosenMenu === CHOSEN_MENU.information &&
-                advertisement?.userUid !== session.data.userData.uid && (
+                advertisement?.userUid === session.data.userData.uid && (
                     <ModalMechanism
                         open={isOpenInfluencerModal}
                         setOpen={setIsOpenInfluencerModal}
@@ -194,83 +192,3 @@ export default function AdvertisementDisplay(props: Props) {
 
     return <Background mainArea={mainArea} bottomArea={bottomArea} />;
 }
-
-export const styles = StyleSheet.create({
-    addInfluencerButton: {
-        width: "100%",
-        height: 56,
-        borderWidth: 0,
-        marginTop: 5,
-    },
-    buttonContainer: {
-        height: 88,
-        width: "100%",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    logoAndTitleContainer: { flexDirection: "row", paddingBottom: 24 },
-    companyLogo: {
-        height: 73,
-        width: 73,
-        backgroundColor: "green",
-        borderRadius: 12,
-        marginRight: 10,
-    },
-    company: {
-        fontSize: 12,
-        color: Colors.grayscale.text.body,
-        lineHeight: 12.4,
-    },
-    advertisementTitle: {
-        fontSize: 24,
-        color: Colors.grayscale.text.title,
-        fontWeight: "700",
-        lineHeight: 28.8,
-        paddingRight: 80,
-    },
-    menuChoiceContainer: {
-        marginTop: 24,
-        flex: 1,
-    },
-    menusContianer: {
-        marginTop: 12,
-        paddingLeft: 12,
-        paddingRight: 12,
-        flexDirection: "row",
-    },
-    pickedMenuContainer: {
-        width: "50%",
-        borderTopWidth: 0,
-        borderLeftWidth: 0,
-        marginRight: 0,
-        fontFamily: "PoppinsSemiBold",
-        color: "white",
-        borderRadius: 0,
-        marginLeft: 0,
-        borderRightWidth: 0,
-        borderColor: Colors.primary.surface.lighter,
-    },
-    pickedMenuTitle: {
-        fontFamily: "PoppinsSemiBold",
-        color: "white",
-    },
-    menuContainer: {
-        width: "50%",
-        borderColor: Colors.grayscale.surface.subtle,
-        borderTopWidth: 0,
-        borderLeftWidth: 0,
-        borderRadius: 0,
-        marginRight: 0,
-        marginLeft: 0,
-        borderRightWidth: 0,
-    },
-    menuTitle: {
-        fontSize: 16,
-        color: Colors.grayscale.text.disabled,
-    },
-    container: {
-        paddingTop: 48,
-        flex: 1,
-        backgroundColor: Colors.grayscale.surface.darker,
-    },
-});

@@ -19,7 +19,7 @@ export default function EachAdvertisementDashboard(item: {
                     <Text style={styles.nameOfCompany}>
                         {advertisement.createdByUser.nameOfCompany}
                     </Text>
-                    <Text style={styles.title}>{advertisement.title}</Text>
+                    <Text numberOfLines={1} ellipsizeMode="tail" style={styles.title}>{advertisement.title}</Text>
                 </View>
             </View>
             <View style={styles.platformAndPublicationContainer}>

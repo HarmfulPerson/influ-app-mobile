@@ -89,6 +89,7 @@ export default function App() {
                     rows: Array<Advertisement>;
                 }>
             ) => {
+                console.log(response.data.data.rows);
                 setDisplayData(response.data.data.rows);
                 setCount(response.data.data.count);
             }
@@ -292,7 +293,7 @@ export default function App() {
                     <SkeletonLoader />
                 )}
                 <AddButtonList
-                    onButtonClick={() => router.push("/addSocial")}
+                    onButtonClick={() => router.push("/addCollaboration")}
                 />
             </LinearGradient>
         </SafeAreaView>

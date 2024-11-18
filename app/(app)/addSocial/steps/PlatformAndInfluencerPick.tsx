@@ -180,7 +180,7 @@ const PlatformAndInfluencerPick = () => {
                                     displayEmptyListComponent={false}
                                     handleButtonClick={handleButtonClick}
                                     invitedInfluencers={
-                                        platformAndInfluencer.influencer
+                                        platformAndInfluencer.influencer.length
                                             ? [
                                                   platformAndInfluencer
                                                       .influencer[0].uid,

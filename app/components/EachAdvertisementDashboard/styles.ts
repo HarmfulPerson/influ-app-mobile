@@ -25,6 +25,7 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         fontFamily: "PoppinsSemiBold",
         color: Colors.grayscale.text.title,
+        paddingRight:40,
     },
     companyLogo: {
         width: 60,
@@ -36,6 +37,7 @@ export const styles = StyleSheet.create({
         alignItems: "flex-start",
         justifyContent: "flex-start",
         marginLeft: 10,
+        paddingRight: 10,
     },
     platformsContainer: {
         flexDirection: "row",

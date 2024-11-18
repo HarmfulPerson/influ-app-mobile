@@ -44,7 +44,7 @@ export const styles = StyleSheet.create({
         marginTop: 12,
     },
     companyNameText: { fontSize: 10, color: "white", opacity: 0.75 },
-    titleText: { fontSize: 20 },
+    titleText: { fontSize: 20, color: 'white' },
     companyAndTitleContainer: {
         width: "80%",
         height: "100%",

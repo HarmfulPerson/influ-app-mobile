@@ -109,7 +109,7 @@ export default function Summary() {
           <Text style={styles.companyNameText}>
             {session.data.userData.nameOfCompany}
           </Text>
-          <Text style={styles.titleText}>{title}</Text>
+          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.titleText}>{title}</Text>
         </View>
       </View>
       <FilterDisplayer filters={filters} />

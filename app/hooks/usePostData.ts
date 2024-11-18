@@ -10,7 +10,7 @@ const usePostData = () => {
     const postData = async (url: string, data: any, showToast = true) => {
         try {
             const response = await axios.post(
-                `http://192.168.0.103:4000/api/v1${url}`,
+                `http://192.168.0.102:4000/api/v1${url}`,
                 data,
                 {
                     headers: {
