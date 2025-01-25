@@ -20,6 +20,7 @@ export default function SignIn() {
         password: "",
     });
     const handleLogin = async () => {
+        console.log("xD??");
         const response = await signIn({
             ...loginData,
             phoneNumber: `${phoneNumberPrefix}${loginData.phoneNumber}`,

@@ -31,7 +31,7 @@ export default function ChoosePhoto() {
 
     const handleNavigateWithPhoto = async () => {
         const response = await FileSystem.uploadAsync(
-            `http://192.168.0.102:4000/api/v1/file/userAvatar/${session.data.userData.uid}`,
+            `http://192.168.0.103:4000/api/v1/file/userAvatar/${session.data.userData.uid}`,
             image as string,
             {
                 headers: {

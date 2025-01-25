@@ -25,7 +25,9 @@ export function useSession() {
             );
         }
     }
-
+    if (value.session === null) {
+        console.log(value);
+    }
     return value;
 }
 
@@ -38,7 +40,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
                 signIn: async (loginData: LoginData) => {
                     try {
                         const response = await axios.post(
-                            "http://192.168.0.102:4000/api/v1/auth/signIn",
+                            "http://192.168.0.103:4000/api/v1/auth/signIn",
                             loginData
                         );
                         setSession(response.data);

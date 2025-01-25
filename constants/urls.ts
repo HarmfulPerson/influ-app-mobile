@@ -1,8 +1,10 @@
 export const URL = {
-  category: "/categories",
-  role: "/role",
-  socialRange: "/socialRange",
-  advertisement: "/advertisement",
-  user: "/user",
-  social: "/social",
+    category: "/categories",
+    role: "/role",
+    socialRange: "/socialRange",
+    advertisement: "/advertisement",
+    user: "/user",
+    social: "/social",
+    campaigns: "/campaigns",
+    chatroom: "/chatroom",
 };

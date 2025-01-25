@@ -1,6 +1,7 @@
 import { Redirect, Stack } from "expo-router";
 import { useSession } from "../hooks/session/authenticationProvider";
 import { Text, useColorScheme } from "react-native";
+import { WSProvider } from "../hooks/useWS";
 export default function AppLayout() {
     const { session, isLoading } = useSession();
     const colorScheme = useColorScheme();
@@ -19,17 +20,23 @@ export default function AppLayout() {
 
     // This layout can be deferred because it's not the root layout.
     return (
-        <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen
-                name="addCollaboration"
-                options={{ headerShown: false }}
-            />
-            <Stack.Screen name="addSocial" options={{ headerShown: false }} />
-            <Stack.Screen
-                name="advertisement"
-                options={{ headerShown: false }}
-            />
-        </Stack>
+        <WSProvider>
+            <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen
+                    name="addCollaboration"
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="addSocial"
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="advertisement"
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen name="chat" options={{ headerShown: false }} />
+            </Stack>
+        </WSProvider>
     );
 }

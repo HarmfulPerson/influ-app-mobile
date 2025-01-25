@@ -29,3 +29,4 @@ export const SEXES = {
     male: "male",
     female: "female",
 };
+export const DEBOUNCE_DELAY = 500;

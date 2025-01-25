@@ -1,15 +1,7 @@
 import { Check, ChevronDown, ChevronUp } from "lucide-react-native";
-import { useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import type { FontSizeTokens, SelectProps } from "tamagui";
-import {
-    Adapt,
-    Label,
-    Select,
-    Sheet,
-    XStack,
-    YStack,
-    getFontSize,
-} from "tamagui";
+import { Adapt, Select, Sheet, YStack, getFontSize } from "tamagui";
 import { LinearGradient } from "tamagui/linear-gradient";
 import Colors from "../../../constants/Colors";
 

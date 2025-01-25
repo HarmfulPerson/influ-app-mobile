@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { ActivityIndicator, Animated, FlatListProps } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useCustomFlatListHook } from "./useFlatList";
@@ -8,9 +8,10 @@ type CustomFlatListProps<T> = Omit<FlatListProps<T>, "ListHeaderComponent"> & {
     HeaderComponent: JSX.Element;
     StickyElementComponent: JSX.Element;
     TopListElementComponent?: JSX.Element;
-    changesList: string;
+    changesList?: string;
     data: any;
     shouldUseSpinner: boolean;
+    flatListStyle?: any;
 };
 
 function CustomFlatList<T>({
@@ -21,6 +22,7 @@ function CustomFlatList<T>({
     StickyElementComponent,
     TopListElementComponent,
     shouldUseSpinner,
+    flatListStyle,
     ...props
 }: CustomFlatListProps<T>): React.ReactNode {
     const listRef = useRef<Animated.FlatList<T> | null>(null);
@@ -35,10 +37,13 @@ function CustomFlatList<T>({
                 data={data}
                 {...props}
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{
-                    alignItems: "center",
-                    paddingTop: 120,
-                }}
+                contentContainerStyle={[
+                    {
+                        alignItems: "center",
+                        paddingTop: 120,
+                    },
+                    flatListStyle,
+                ]}
                 onScroll={Animated.event(
                     [{ nativeEvent: { contentOffset: { y: scrollY } } }],
                     {

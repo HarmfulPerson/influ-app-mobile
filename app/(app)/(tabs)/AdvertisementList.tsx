@@ -50,11 +50,13 @@ export default function App() {
         ageRange: Array<number>;
         socialRanges: Array<SocialRange>;
         categories: Category[];
+        search: string;
     }>({
         sexes: [],
         ageRange: [24, 60],
         socialRanges: [],
         categories: pickedCategories,
+        search: "",
     });
     const [changesList, setChangesList] = useState(MENU_TYPES.all);
 
@@ -89,7 +91,6 @@ export default function App() {
                     rows: Array<Advertisement>;
                 }>
             ) => {
-                console.log(response.data.data.rows);
                 setDisplayData(response.data.data.rows);
                 setCount(response.data.data.count);
             }

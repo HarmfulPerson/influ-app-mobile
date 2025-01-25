@@ -57,7 +57,6 @@ function RootLayoutNav() {
                 <ThemeProvider value={DefaultTheme}>
                     <ToastViewport top={50} left={0} right={0} />
                     <CurrentToast />
-
                     <Slot></Slot>
                 </ThemeProvider>
             </ToastProvider>

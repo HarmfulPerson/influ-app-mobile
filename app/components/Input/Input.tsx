@@ -1,3 +1,4 @@
+import React, { forwardRef } from "react";
 import {
     Button as TamaguiButton,
     Text,
@@ -26,7 +27,7 @@ type InputProps = {
     styleInput: any;
 };
 
-const Input = (props: Partial<InputProps>) => {
+const Input = forwardRef<any, Partial<InputProps>>((props, ref) => {
     const {
         onChangeText,
         placeholder,
@@ -43,6 +44,7 @@ const Input = (props: Partial<InputProps>) => {
         hasIconBackground = true,
         styleInput,
     } = props;
+
     const returnStyles = () => {
         let style = {
             label: styles.inputLabel,
@@ -72,6 +74,7 @@ const Input = (props: Partial<InputProps>) => {
 
         return style;
     };
+
     const typeOfInputStyles = returnStyles();
 
     return (
@@ -91,6 +94,7 @@ const Input = (props: Partial<InputProps>) => {
                         <View style={styles.leftIcon}>{iconLeft}</View>
                     )}
                     <TamaguiInput
+                        ref={ref}
                         borderWidth={0}
                         secureTextEntry={secureTextEntry}
                         style={{ flex: 1, height: 40 }}
@@ -135,6 +139,6 @@ const Input = (props: Partial<InputProps>) => {
             </Text>
         </>
     );
-};
+});
 
 export default Input;

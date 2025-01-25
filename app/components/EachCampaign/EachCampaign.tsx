@@ -1,90 +1,48 @@
 import { View, Text } from "tamagui";
-import Colors from "../../../constants/Colors";
-import EachAdvertisement from "../EachAdvertisement/EachAdvertisement";
 import EachCooperation from "../EachCooperation/EachCooperation";
-import { BlurView } from "@react-native-community/blur";
-import SocialIcon from "../SocialIconParser";
+import { styles } from "./styles";
+import { Campaign } from "../../types/campaign";
+import { Social } from "../../types/social";
 
-const EachCampaign = (props: any) => {
-  const test = [1, 2, 3, 4, 5];
-  return (
-    <View
-      style={{
-        backgroundColor: Colors.grayscale.surface.darker,
-        borderWidth: 1,
-        borderColor: Colors.grayscale.surface.default,
-        borderRadius: 32,
-        padding: 16,
-        width: "98%",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <View
-        style={{
-          alignItems: "center",
-          justifyContent: "space-between",
-          width: "100%",
-          flexDirection: "row",
-        }}
-      >
-        <Text
-          style={{
-            color: Colors.grayscale.text.title,
-            fontSize: 24,
-            fontWeight: "700",
-          }}
-        >
-          Kampania Ziomo
-        </Text>
-        <Text
-          style={{
-            color: Colors.grayscale.text.title,
-            fontSize: 12,
-          }}
-        >
-          4 współprace
-        </Text>
-      </View>
-      <BlurView
-        blurType="light"
-        style={{
-          height: 60,
-          minWidth: "100%",
-        }}
-        overlayColor="transparent"
-        blurAmount={10}
-      >
-        <View
-          style={{
-            flex: 1,
-            borderColor: "red",
-            borderWidth: 1,
-            filter: "blur(10)",
-          }}
-        ></View>
-      </BlurView>
-      <BlurView
-        blurType="light"
-        style={{
-          height: 60,
-          minWidth: "100%",
-          marginTop: -30,
-        }}
-        overlayColor="transparent"
-        blurAmount={10}
-      >
-        <View
-          style={{
-            flex: 1,
-            borderColor: "red",
-            borderWidth: 1,
-            filter: "blur(10)",
-          }}
-        ></View>
-      </BlurView>
-    </View>
-  );
+const EachCampaign = ({ item }: { item: Campaign }) => {
+    const isCampaignFinished =
+        !!item.socials.length &&
+        item?.socials
+            .map((social: Social) => social.socialStatus?.status)
+            .every((status: string) => status === "finished");
+
+    return (
+        <View style={styles.container}>
+            {isCampaignFinished && (
+                <View style={styles.endContainer}>
+                    <Text style={styles.endText}>ZAKOŃCZONA</Text>
+                </View>
+            )}
+            <View style={styles.nameAndCounterContainer}>
+                <Text style={styles.campaignName}>{item.name}</Text>
+                <Text style={styles.campaignCounter}>
+                    {`${item.socials.length} współprace`}
+                </Text>
+            </View>
+
+            {item.socials.map((item: Social, index: number) => (
+                <View
+                    key={index}
+                    style={[
+                        styles.eachCooperationContainer,
+                        {
+                            marginTop: index === 0 ? -8 : -70,
+                            zIndex: index + 1,
+                        },
+                    ]}>
+                    <EachCooperation
+                        containerStyle={styles.eachCooperation}
+                        item={item}
+                    />
+                </View>
+            ))}
+        </View>
+    );
 };
 
 export default EachCampaign;

@@ -8,7 +8,7 @@ export const getData = async <T>(
 ): Promise<T | void> => {
     try {
         const response: AxiosResponse = await axios(
-            `http://192.168.0.102:4000/api/v1${url}`,
+            `http://192.168.0.103:4000/api/v1${url}`,
             {
                 ...options,
                 headers: {
@@ -34,7 +34,7 @@ export const useAuthGetData = () => {
         setIsLoading(true);
         try {
             const response: AxiosResponse = await axios(
-                `http://192.168.0.102:4000/api/v1${url}`,
+                `http://192.168.0.103:4000/api/v1${url}`,
                 {
                     ...options,
                     headers: {

@@ -44,7 +44,7 @@ export const styles = StyleSheet.create({
         paddingRight: 32,
         paddingLeft: 32,
     },
-    header: { fontWeight: "700", fontSize: 32 },
+    header: { fontWeight: "700", fontSize: 32, color: "white" },
     buttonContainer: {
         paddingBottom: 32,
         paddingRight: 32,

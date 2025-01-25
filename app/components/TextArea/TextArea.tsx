@@ -9,6 +9,7 @@ import {
 import Colors from "../../../constants/Colors";
 import { KeyboardTypeOptions } from "react-native";
 import { styles } from "./styles";
+import { X } from "lucide-react-native";
 
 type InputProps = {
     onChangeText: (text: string) => void;

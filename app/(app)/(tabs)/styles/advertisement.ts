@@ -87,6 +87,7 @@ export const styles = StyleSheet.create({
         paddingLeft: 16,
         position: "relative",
         shadowOpacity: 0.15,
+        paddingBottom: 16,
     },
     gradientStyle: {
         flex: 1,
