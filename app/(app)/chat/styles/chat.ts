@@ -1,0 +1,112 @@
+import { StyleSheet } from "react-native";
+import Colors from "../../../../constants/Colors";
+
+export const styles = StyleSheet.create({
+  stickyContainer: {
+    minWidth: "100%",
+    flexDirection: "row",
+    backgroundColor: Colors.grayscale.surface.darker,
+    zIndex: 5,
+  },
+  backButton: {
+    width: 44,
+    height: 44,
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 12,
+    gap: 8,
+    borderColor: Colors.grayscale.surface.subtle,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  userStatus: {
+    fontSize: 12,
+    lineHeight: 14.4,
+    color: Colors.grayscale.text.disabled,
+  },
+  userStatusContainer: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 4,
+    marginBottom: 2,
+    backgroundColor: Colors.success.surface.lighter,
+  },
+  onlineDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 4,
+    marginBottom: 2,
+    backgroundColor: Colors.success.surface.lighter,
+  },
+  userInfoContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    textAlign: "center",
+  },
+  chatUsers: {
+    color: Colors.grayscale.text.title,
+    fontSize: 20,
+    lineHeight: 24,
+    fontFamily: "PoppinsSemiBold",
+  },
+  usersAndBackgroundContainer: { flex: 1, flexDirection: "row" },
+  userAvatar: {
+    height: 44,
+    width: 44,
+    borderRadius: 22,
+    backgroundColor: "blue",
+    marginLeft: 16,
+  },
+  chatUsersContainer: {
+    flexDirection: "column",
+    justifyContent: "center",
+    marginLeft: 16,
+  },
+  menu: {
+    width: 44,
+    height: 44,
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 12,
+    gap: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    borderColor: Colors.grayscale.surface.subtle,
+  },
+  messagesFlatList: {
+    paddingTop: 0,
+    paddingBottom: 0,
+    marginTop: 0,
+    marginBottom: 0,
+  },
+  keyboardContainer: {
+    flexGrow: 1,
+    flexDirection: "column",
+    justifyContent: "space-between",
+    backgroundColor: Colors.grayscale.surface.darker,
+    paddingBottom: 16,
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: 24,
+    backgroundColor: Colors.grayscale.surface.darker,
+  },
+  backgroundAvatar: {
+    height: 44,
+    width: 44,
+    borderRadius: 22,
+    backgroundColor: "blue",
+    marginLeft: 16,
+  },
+  usersInfoContainer: {
+    flexDirection: "column",
+    justifyContent: "center",
+    marginLeft: 16,
+  },
+  loaderContainer: {
+    paddingVertical: 20,
+    borderTopWidth: 1,
+  },
+});

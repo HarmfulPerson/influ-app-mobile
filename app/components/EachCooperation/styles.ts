@@ -4,9 +4,9 @@ import Colors from "../../../constants/Colors";
 export const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.grayscale.surface.darker,
-    width: "90%",
+    minWidth: "90%",
     marginHorizontal: 24,
-    marginVertical: 8,
+    marginVertical: 2,
     padding: 16,
     borderRadius: 24,
     borderWidth: 1,

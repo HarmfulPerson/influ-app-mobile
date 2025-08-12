@@ -69,7 +69,6 @@ const Index = () => {
                     rows: Array<Advertisement>;
                 }>
             ) => {
-                console.log(response.data.data.rows[0]);
                 setDisplayData(response.data.data.rows);
             }
         );

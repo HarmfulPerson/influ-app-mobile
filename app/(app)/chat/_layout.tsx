@@ -1,310 +1,190 @@
-import { createContext, useEffect, useRef, useState } from "react";
-import {
-    SafeAreaView,
-    useSafeAreaInsets,
-} from "react-native-safe-area-context";
-import { ScrollView, Text, View } from "tamagui";
+import { useEffect, useState } from "react";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { Text, View } from "tamagui";
 import Colors from "../../../constants/Colors";
-import { GripVertical, SendHorizontal, X } from "lucide-react-native";
-import Input from "../../components/Input/Input";
+import { GripVertical, X } from "lucide-react-native";
 import { useSession } from "../../hooks/session/authenticationProvider";
-import { navigateBack } from "../../../utils/utils";
 import EachMessage from "./common/EachMessage";
 import { useWS } from "../../hooks/useWS";
 import { router, useLocalSearchParams } from "expo-router";
 import ChatTextArea from "./common/ChatTextArea";
-import { KeyboardAvoidingView, Platform } from "react-native";
+import { ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
 import CustomFlatList from "../../components/FlatList/customFlatList";
-import { User } from "../../types/user";
+import { useChat } from "../../hooks/useChat";
+import { ChatroomUser, Message, ChatroomUserJunction } from "../../types/chat";
+import { styles } from "./styles/chat";
+import { CHAT_EVENTS } from "../../../constants/Chat";
+
+const IS_LOADING_LIMIT = 5000;
 
 export default function ChatLayout() {
-    const { session } = useSession();
-    const { emit, on, off } = useWS();
-    const test = useLocalSearchParams();
-    const [messages, setMessages] = useState(
-        JSON.parse(test.messages as any).messages
+  const { session } = useSession();
+  const { emit, on, off } = useWS();
+  const { chats, onlineUsers, updateSeen, addMoreMessages } = useChat();
+  const { itemUid } = useLocalSearchParams();
+  const chat = chats.find((chat: ChatroomUserJunction) => chat.uid === itemUid)?.chatroom;
+  const messages: Message[] = chat?.messages;
+  const userTalkingTo: string = chat?.chatroomUsers[0]?.userUid;
+  const insets = useSafeAreaInsets();
+  const [newMessage, setNewMessage] = useState<string>("");
+  const [isTyping, setIsTyping] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const parseUserUrls = () =>
+    chat?.chatroomUsers.reduce(
+      (acc: Record<string, string>, user: ChatroomUser) => ({
+        ...acc,
+        [user.userUid]: user.user.avatarUrl,
+      }),
+      {}
     );
-    const insets = useSafeAreaInsets();
-    const [isInitialEnter, setIsInitialEnter] = useState(true);
-    const [onlineUsers, setOnlineUsers] = useState<Array<string>>([]);
-    const userTalkingTo = JSON.parse(test.messages as any).chatroomUsers[0]
-        ?.userUid;
-    const [newMessage, setNewMessage] = useState("");
-    const [isTyping, setIsTyping] = useState(false);
 
-    const parseUserUrls = () =>
-        JSON.parse(test.messages as any).chatroomUsers.reduce(
-            (acc: Record<string, string>, user: any) => ({
-                ...acc,
-                [user.userUid]: user.user.avatarUrl,
-            }),
-            {}
-        );
-
-    useEffect(() => {
-        console.log(isInitialEnter);
-        if (messages.length && isInitialEnter) {
-            const messagesToUpdate: string[] = [];
-            const modifiedMessages = messages.map((message: any) => {
-                if (
-                    message.isSeen ||
-                    message.userUid === session?.data?.userData?.uid
-                ) {
-                    return message;
-                } else {
-                    messagesToUpdate.push(message.uid);
-                    return { ...message, isSeen: true };
-                }
-            });
-            console.log(modifiedMessages[0].message);
-            emit("updateSeen", {
-                messagesToUpdate,
-                chatroomUid: JSON.parse(test.messages as any).uid,
-            });
-            setMessages(modifiedMessages);
-            setIsInitialEnter(false);
+  useEffect(() => {
+    if (messages.length) {
+      const messagesToUpdate: string[] = [];
+      messages.forEach((message: Message) => {
+        if (message.isSeen || message.userUid === session?.data?.userData?.uid) {
+          return;
+        } else {
+          messagesToUpdate.push(message.uid);
+          return;
         }
-    }, [messages]);
-
-    useEffect(() => {
-        emit("users", {});
-    }, []);
-
-    useEffect(() => {
-        const handleMessage = (data: any) => {
-            setMessages((prevMessages: any) => [data, ...prevMessages]);
-        };
-        let typingTimeout: NodeJS.Timeout | null = null;
-
-        const handleTyping = () => {
-            setIsTyping(true);
-            if (typingTimeout) {
-                clearTimeout(typingTimeout);
-            }
-            typingTimeout = setTimeout(() => {
-                setIsTyping(false);
-            }, 2000);
-        };
-
-        on("chatMessage", handleMessage);
-        on("typing", handleTyping);
-        on("updateSeen", handleUpdateSeen);
-        on("users", (data: any) => setOnlineUsers(data));
-        on("userJoin", (data: any) => handleAddNewOnlineUser(data.userUid));
-        on("userDisconnect", (data: any) => handleUserDisconnect(data.userUid));
-
-        return () => {
-            off("chatMessage");
-            off("users");
-            off("typing");
-            if (typingTimeout) {
-                clearTimeout(typingTimeout);
-            }
-        };
-    }, [on, off]);
-
-    const handleUpdateSeen = (data: Array<string>) => {
-        console.log("yyyy", messages[0].message);
-        setMessages(
-            messages.map((message: any) => ({ ...message, isSeen: true }))
-        );
-    };
-
-    const handleAddNewOnlineUser = (userUid: string) => {
-        setOnlineUsers([...onlineUsers, userUid]);
-    };
-
-    const handleUserDisconnect = (userUid: string) => {
-        setOnlineUsers(onlineUsers.filter((user: string) => user !== userUid));
-    };
-
-    const handleSendMessage = () => {
-        const trimmedMessage = newMessage.trim();
-        if (!trimmedMessage) return;
-
-        const newMessageObject = {
-            userUid: session?.data?.userData?.uid,
-            message: trimmedMessage,
-            createdAt: new Date().toISOString(),
-            chatroomUid: JSON.parse(test.messages as any).uid,
-        };
-        emit("chatMessage", newMessageObject);
-
-        setNewMessage("");
-    };
-
-    const handleSetNewMessage = (data: string) => {
-        emit("typing", {
-            chatroomUid: JSON.parse(test.messages as any).uid,
+      });
+      if (messagesToUpdate.length) {
+        emit(CHAT_EVENTS.updateSeen, {
+          messagesToUpdate,
+          chatroomUid: chat.uid,
         });
-        setNewMessage(data);
+        updateSeen(chat.uid);
+      }
+    }
+    emit(CHAT_EVENTS.openChat, { chatroomUid: chat.uid });
+    emit(CHAT_EVENTS.users, {});
+  }, []);
+
+  useEffect(() => {
+    let typingTimeout: NodeJS.Timeout | null = null;
+
+    const handleTyping = () => {
+      setIsTyping(true);
+      if (typingTimeout) {
+        clearTimeout(typingTimeout);
+      }
+      typingTimeout = setTimeout(() => {
+        setIsTyping(false);
+      }, 2000);
     };
 
-    const sticky = (
-        <View
-            style={{
-                minWidth: "100%",
-                flexDirection: "row",
-                backgroundColor: Colors.grayscale.surface.darker,
-                zIndex: 5,
-            }}>
-            <View
-                onPress={() => router.push("messages")}
-                style={{
-                    width: 44,
-                    height: 44,
-                    borderWidth: 1,
-                    borderRadius: 12,
-                    padding: 12,
-                    gap: 8,
-                    borderColor: Colors.grayscale.surface.subtle,
-                    alignItems: "center",
-                    justifyContent: "center",
-                }}>
-                <X
-                    width={22}
-                    height={22}
-                    color={Colors.grayscale.border.darker}
-                />
-            </View>
-            <View style={{ flex: 1, flexDirection: "row" }}>
-                <View
-                    style={{
-                        height: 44,
-                        width: 44,
-                        borderRadius: 22,
-                        backgroundColor: "blue",
-                        marginLeft: 16,
-                    }}></View>
-                <View
-                    style={{
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        marginLeft: 16,
-                    }}>
-                    <Text
-                        style={{
-                            color: Colors.grayscale.text.title,
-                            fontSize: 20,
-                            lineHeight: 24,
-                            fontFamily: "PoppinsSemiBold",
-                        }}>
-                        {JSON.parse(test.messages as any)
-                            .chatroomUsers.map(
-                                (user: any) => user.user.username
-                            )
-                            .join(", ")}
-                    </Text>
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            textAlign: "center",
-                        }}>
-                        {onlineUsers.includes(userTalkingTo) && (
-                            <View
-                                style={{
-                                    width: 8,
-                                    height: 8,
-                                    borderRadius: 4,
-                                    marginRight: 4,
-                                    marginBottom: 2,
-                                    backgroundColor:
-                                        Colors.success.surface.lighter,
-                                }}></View>
-                        )}
-                        <Text
-                            style={{
-                                fontSize: 12,
-                                lineHeight: 14.4,
-                                color: Colors.grayscale.text.disabled,
-                            }}>
-                            {isTyping
-                                ? "Pisze..."
-                                : onlineUsers.includes(userTalkingTo)
-                                ? "Dostępny"
-                                : "Niedostępny"}
-                        </Text>
-                    </View>
-                </View>
-            </View>
-            <View
-                style={{
-                    width: 44,
-                    height: 44,
-                    borderWidth: 1,
-                    borderRadius: 12,
-                    padding: 12,
-                    gap: 8,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderColor: Colors.grayscale.surface.subtle,
-                }}>
-                <GripVertical
-                    width={16}
-                    height={16}
-                    color={Colors.grayscale.border.darker}
-                />
-            </View>
-        </View>
-    );
+    on(`${CHAT_EVENTS.typing}:${chat.uid}`, handleTyping);
+    on(`${CHAT_EVENTS.getMoreMessages}:${chat.uid}`, handleGetMoreMessages);
 
-    const header = <View></View>;
+    return () => {
+      off(`${CHAT_EVENTS.typing}:${chat.uid}`);
+      if (typingTimeout) {
+        clearTimeout(typingTimeout);
+      }
+    };
+  }, [on, off]);
 
+  const handleGetMoreMessages = (messages: Message[]) => {
+    addMoreMessages(messages, chat.uid);
+    setIsLoading(false);
+  };
+
+  const handleSendMessage = () => {
+    const trimmedMessage = newMessage.trim();
+    if (!trimmedMessage) return;
+
+    const newMessageObject = {
+      userUid: session?.data?.userData?.uid,
+      message: trimmedMessage,
+      createdAt: new Date().toISOString(),
+      chatroomUid: chat.uid,
+    };
+    emit(CHAT_EVENTS.chatMessage, newMessageObject);
+    setNewMessage("");
+  };
+
+  const handleSetNewMessage = (data: string) => {
+    emit(CHAT_EVENTS.typing, {
+      chatroomUid: chat.uid,
+    });
+    setNewMessage(data);
+  };
+
+  const handleBack = () => {
+    router.push("messages");
+    emit(CHAT_EVENTS.closeChat, { chatroomUid: chat.uid });
+  };
+
+  const emptyComponent = <View></View>;
+
+  const renderFooter = () => {
+    if (!isLoading) return null;
     return (
-        <SafeAreaView
-            edges={["top", "bottom"]}
-            style={{
-                flex: 1,
-                paddingHorizontal: 24,
-                backgroundColor: Colors.grayscale.surface.darker,
-            }}>
-            {sticky}
-            <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : undefined}
-                style={{
-                    flexGrow: 1,
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    backgroundColor: Colors.grayscale.surface.darker,
-                    paddingBottom: 16,
-                }}>
-                <CustomFlatList<any>
-                    inverted
-                    data={messages}
-                    shouldUseSpinner={false}
-                    changesList={JSON.stringify(messages)}
-                    extraData={parseUserUrls()}
-                    renderItem={({ item }) => (
-                        <EachMessage
-                            item={item}
-                            extraInfo={parseUserUrls()}
-                            loggedUser={session?.data?.userData?.uid}
-                        />
-                    )}
-                    HeaderComponent={header}
-                    StickyElementComponent={header}
-                    style={{
-                        marginTop:
-                            Platform.OS === "ios"
-                                ? insets.top
-                                : insets.top + 40,
-                        marginBottom: -insets.bottom,
-                        flex: 1,
-                    }}
-                    flatListStyle={{
-                        paddingTop: 0,
-                        paddingBottom: 0,
-                        marginTop: 0,
-                        marginBottom: 0,
-                    }}
-                />
-                <ChatTextArea
-                    value={newMessage}
-                    onChangeText={handleSetNewMessage}
-                    sendMessage={handleSendMessage}
-                />
-            </KeyboardAvoidingView>
-        </SafeAreaView>
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="small" color="#0000ff" />
+      </View>
     );
+  };
+
+  const handleLoadMore = () => {
+    if (messages.length >= 50) {
+      emit(CHAT_EVENTS.getMoreMessages, { fromDate: messages[messages.length - 1].createdAt, chatroomUid: chat.uid });
+
+      setIsLoading(true);
+
+      setTimeout(() => {
+        setIsLoading(false);
+      }, IS_LOADING_LIMIT);
+    }
+  };
+
+  const sticky = (
+    <View style={styles.stickyContainer}>
+      <View onPress={handleBack} style={styles.backButton}>
+        <X width={22} height={22} color={Colors.grayscale.border.darker} />
+      </View>
+      <View style={styles.usersAndBackgroundContainer}>
+        <View style={styles.backgroundAvatar}></View>
+        <View style={styles.usersInfoContainer}>
+          <Text style={styles.chatUsers}>{chat.chatroomUsers?.map((user: ChatroomUser) => user.user.username).join(", ")}</Text>
+          <View style={styles.userInfoContainer}>
+            {onlineUsers.includes(userTalkingTo) && <View style={styles.onlineDot}></View>}
+            <Text style={styles.userStatus}>{isTyping ? "Pisze..." : onlineUsers.includes(userTalkingTo) ? "Dostępny" : "Niedostępny"}</Text>
+          </View>
+        </View>
+      </View>
+      <View style={styles.menu}>
+        <GripVertical width={16} height={16} color={Colors.grayscale.border.darker} />
+      </View>
+    </View>
+  );
+
+  return (
+    <SafeAreaView edges={["top", "bottom"]} style={styles.container}>
+      {sticky}
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.keyboardContainer}>
+        <CustomFlatList<Message>
+          inverted
+          data={messages}
+          shouldUseSpinner={false}
+          ListFooterComponent={renderFooter}
+          changesList={`${JSON.stringify(messages)}${isLoading}`}
+          extraData={parseUserUrls()}
+          renderItem={({ item }) => <EachMessage item={item} extraInfo={parseUserUrls()} loggedUser={session?.data?.userData?.uid} />}
+          HeaderComponent={emptyComponent}
+          StickyElementComponent={emptyComponent}
+          style={{
+            marginTop: Platform.OS === "ios" ? insets.top : insets.top + 40,
+            marginBottom: -insets.bottom,
+            flex: 1,
+          }}
+          onEndReached={handleLoadMore}
+          flatListStyle={styles.messagesFlatList}
+        />
+        <ChatTextArea value={newMessage} onChangeText={handleSetNewMessage} sendMessage={handleSendMessage} />
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
 }

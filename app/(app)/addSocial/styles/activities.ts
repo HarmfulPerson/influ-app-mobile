@@ -1,0 +1,58 @@
+import { StyleSheet } from "react-native";
+import Colors from "../../../../constants/Colors";
+
+export const styles = StyleSheet.create({
+  title: {
+    fontSize: 32,
+    lineHeight: 38.4,
+    color: Colors.grayscale.text.title,
+    fontFamily: "PoppinsSemiBold",
+    marginBottom: 8,
+  },
+  wrapper: { flex: 1 },
+  subtitle: {
+    fontSize: 12,
+    lineHeight: 14.4,
+    color: Colors.grayscale.text.subtitle,
+    marginBottom: 40,
+  },
+  scrollView: { flexGrow: 1 },
+  platformTitle: {
+    fontSize: 24,
+    lineHeight: 28.8,
+    color: Colors.grayscale.text.title,
+    fontWeight: "700",
+    marginBottom: 8,
+    textTransform: "capitalize",
+  },
+  buttonsContainer: {
+    display: "flex",
+    flexDirection: "row",
+    flex: 1,
+    justifyContent: "space-between",
+  },
+  navigationButton: { height: "100%", width: "48%" },
+  containerActivityDetails: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  liveTypeCotnainer: { marginTop: 12, marginBottom: 12 },
+  socialTypeRadio: { width: 24, height: 24 },
+  passiveActiveContainer: { width: "100%", flexDirection: "column", paddingBottom: 20 },
+  radioButton: { width: "100%", marginBottom: 8, borderRadius: 12, backgroundColor: "#373137", flexDirection: "row", height: 48, paddingHorizontal: 16, paddingVertical: 12, borderColor: Colors.primary.surface.lighter, borderWidth: 1 },
+  radioHalfWidthButton: { width: "46%", borderRadius: 12, backgroundColor: "#373137", flexDirection: "row", height: 48, paddingHorizontal: 16, paddingVertical: 12, borderColor: Colors.primary.surface.lighter },
+  priceInput: { paddingLeft: 0 },
+  isCocreatedContainer: { width: "100%", flexDirection: "row", justifyContent: "space-between", marginBottom: 12 },
+  radioLabelExpositionType: { fontSize: 12, height: "100%", textAlign: "center", fontFamily: "PoppinsSemiBold", color: Colors.primary.surface.subtle, marginLeft: 12 },
+  radioLabelCocreated: { fontSize: 14, height: "100%", textAlign: "center", fontFamily: "PoppinsSemiBold", color: Colors.primary.surface.subtle, marginLeft: 12 },
+  radioLabel: { fontSize: 16, height: "100%", textAlign: "center", fontFamily: "PoppinsSemiBold", color: Colors.primary.surface.subtle, marginLeft: 12 },
+  inputLabel: { fontSize: 16, lineHeight: 19.2, fontFamily: "PoppinsSemiBold", color: "#CBC7C7", marginBottom: 8 },
+  extraDataContainer: { flexDirection: "column", width: "100%", backgroundColor: "#373137", marginBottom: 8, borderRadius: 12, padding: 16, paddingBottom: 12, borderColor: Colors.primary.surface.lighter, borderWidth: 1 },
+  cocreatedRadio: { width: 20, height: 20 },
+  expositionRadio: { width: 16, height: 16 },
+  isCocreatedTitleContainer: { marginTop: 12 },
+  errorText: { color: Colors.error.border.default, fontSize: 10, marginTop: 4 },
+  expositionErrorContainer: { width: "100%", paddingBottom: 8, alignItems: "flex-end" },
+});

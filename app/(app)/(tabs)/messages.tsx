@@ -6,81 +6,97 @@ import { Search } from "lucide-react-native";
 import Colors from "../../../constants/Colors";
 import { styles } from "./styles/messages";
 import EachChat from "../../components/EachChatComponent/EachChat";
-import { useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import AddButtonList from "../../components/AddButtonList/AddButtonList";
-import { useAuthGetData } from "../../hooks/useGetData";
-import { parseObjectToUrlParams } from "../../../utils/utils";
-import useFilter from "../../hooks/useFilter";
-import { URL } from "../../../constants/urls";
 import { useSession } from "../../hooks/session/authenticationProvider";
+import { useWS } from "../../hooks/useWS";
+import { useChat } from "../../hooks/useChat";
+import { ListenersContext } from "../_layout";
+import { ChatroomUserJunction, Message } from "../../types/chat";
+import { CHAT_EVENTS } from "../../../constants/Chat";
+import NewChatModal from "../../components/NewChatModal/NewChatModal";
+import { router } from "expo-router";
 
 export default function Chat() {
-    const [chats, setChats] = useState<any>([]);
-    const [count, setCount] = useState<number | null>(null);
-    const { session } = useSession();
-    const { fetchData: getChats } = useAuthGetData();
-    const { page, rowsPerPage } = useFilter();
-    useEffect(() => {
-        handleFetchChats();
-    }, []);
+  const { session } = useSession();
+  const { chats } = useChat();
+  const { emit } = useWS();
 
-    async function handleFetchChats(): Promise<void> {
-        const response = await getChats<{
-            data: { count: number; rows: Array<any> };
-        }>(
-            `${URL.chatroom}?${parseObjectToUrlParams({
-                page: page.toString(),
-                rowsPerPage: rowsPerPage.toString(),
-            })}`
-        );
+  const { setChats, addMessage, updateSeen, setOnlineUsers, handleAddNewOnlineUser, handleUserDisconnect, addChatToList } = useChat();
+  const { on, off, isSocketReady } = useWS();
+  const isListenersAdded = useContext(ListenersContext);
 
-        setChats(response.data.data.rows);
-        setCount(response.data.data.count);
-    }
+  useEffect(() => {
+    if (!isSocketReady || !isListenersAdded || isListenersAdded.current) return;
+    emit(CHAT_EVENTS.getChats, {});
 
-    const Header = (
-        <View>
-            <Text style={styles.title}>Chat</Text>
-        </View>
-    );
+    on(CHAT_EVENTS.getChats, (data: { count: number; rows: ChatroomUserJunction[] }) => {
+      setChats(data.rows);
+    });
+    on(CHAT_EVENTS.updateSeen, (data: { chatroomUid: string }) => {
+      updateSeen(data.chatroomUid);
+    });
+    on(CHAT_EVENTS.chatMessage, (data: Message) => {
+      //w add message zrobić że jeśli nie ma gdzie dodać to wysłać emit newChat
+      addMessage(data);
+    });
+    on(CHAT_EVENTS.users, (data: string[]) => {
+      setOnlineUsers(data);
+    });
+    on(CHAT_EVENTS.users, (data: string[]) => {
+      setOnlineUsers(data);
+    });
+    on(CHAT_EVENTS.newChat, (data: ChatroomUserJunction) => {
+      addChatToList(data);
+    });
+    on(CHAT_EVENTS.getEachChatroom, (data: { data: ChatroomUserJunction; pushToNewChat: boolean }) => {
+      addChatToList(data.data);
+      if (data.pushToNewChat) {
+        router.push({ pathname: "/chat", params: { itemUid: data.data.uid } });
+      }
+    });
+    on(CHAT_EVENTS.userJoin, (data: { userUid: string }) => handleAddNewOnlineUser(data.userUid));
+    on(CHAT_EVENTS.userDisconnect, (data: { userUid: string }) => handleUserDisconnect(data.userUid));
 
-    const StickyElement = (
-        <View style={styles.searchContainer}>
-            <Input
-                placeholder="Wyszukaj użytkownika..."
-                styleInput={{
-                    minHeight: 56,
-                }}
-                hasIconBackground={false}
-                iconRight={
-                    <Search
-                        width={16}
-                        strokeWidth={3}
-                        height={16}
-                        color={Colors.grayscale.border.disabled}
-                    />
-                }
-            />
-        </View>
-    );
-    return (
-        <SafeAreaView edges={["top", "bottom"]} style={styles.safeAreaView}>
-            <View style={styles.container}>
-                <CustomFlatList<any>
-                    data={chats}
-                    shouldUseSpinner={false}
-                    changesList={JSON.stringify(chats)}
-                    renderItem={({ item }) => (
-                        <EachChat
-                            item={item}
-                            loggedUser={session?.data?.userData?.uid}
-                        />
-                    )}
-                    HeaderComponent={Header}
-                    StickyElementComponent={StickyElement}
-                />
-            </View>
-            <AddButtonList onButtonClick={() => console.log(1)} />
-        </SafeAreaView>
-    );
+    isListenersAdded.current = true;
+
+    return () => {
+      off(CHAT_EVENTS.getChats);
+      off(CHAT_EVENTS.updateSeen);
+      off(CHAT_EVENTS.chatMessage);
+      off(CHAT_EVENTS.users);
+      off(CHAT_EVENTS.userJoin);
+      off(CHAT_EVENTS.userDisconnect);
+
+      isListenersAdded.current = false;
+    };
+  }, [isSocketReady]);
+
+  const Header = (
+    <View>
+      <Text style={styles.title}>Chat</Text>
+    </View>
+  );
+
+  const StickyElement = (
+    <View style={styles.searchContainer}>
+      <Input
+        placeholder="Wyszukaj użytkownika..."
+        styleInput={{
+          minHeight: 56,
+        }}
+        hasIconBackground={false}
+        iconRight={<Search width={16} strokeWidth={3} height={16} color={Colors.grayscale.border.disabled} />}
+      />
+    </View>
+  );
+
+  return (
+    <SafeAreaView edges={["top", "bottom"]} style={styles.safeAreaView}>
+      <View style={styles.container}>
+        <CustomFlatList<ChatroomUserJunction> data={chats} shouldUseSpinner={false} changesList={JSON.stringify(chats)} renderItem={({ item }) => <EachChat key={item.uid} item={item} loggedUser={session?.data?.userData?.uid} />} HeaderComponent={Header} StickyElementComponent={StickyElement} />
+      </View>
+      <NewChatModal />
+    </SafeAreaView>
+  );
 }

@@ -49,41 +49,17 @@ export const styles = StyleSheet.create({
 export default function Background(props: Props) {
   const { mainArea, bottomArea, progress = 0 } = props;
   return (
-    <View
-      flex={1}
-      backgroundColor={Colors.grayscale.surface.darker}
-      style={styles.wrapper}
-      alignItems="center"
-    >
-      <TamaguiButton
-        borderColor={Colors.grayscale.surface.subtle}
-        onPress={navigateBack}
-        style={styles.backButton}
-      >
+    <View flex={1} backgroundColor={Colors.grayscale.surface.darker} style={styles.wrapper} alignItems="center">
+      <TamaguiButton borderColor={Colors.grayscale.surface.subtle} onPress={navigateBack} style={styles.backButton}>
         <ChevronLeft color={Colors.grayscale.text.body} />
       </TamaguiButton>
       <Text style={styles.title}>DODAJ WSPÓŁPRACĘ</Text>
-      <MenuSuseu
-        width={44}
-        height={44}
-        fill={Colors.primary.surface.lighter}
-        style={{ position: "absolute", top: 64, right: 32 }}
-      />
-      <Progress
-        backgroundColor={Colors.grayscale.surface.subtle}
-        style={styles.progressBar}
-        value={progress}
-      >
-        <Progress.Indicator
-          backgroundColor={Colors.secondary.surface.lighter}
-          animation={progress > 0 ? "bouncy" : null}
-        />
+      <MenuSuseu width={44} height={44} fill={Colors.primary.surface.lighter} style={{ position: "absolute", top: 64, right: 32 }} />
+      <Progress backgroundColor={Colors.grayscale.surface.subtle} style={styles.progressBar} value={progress}>
+        <Progress.Indicator backgroundColor={Colors.secondary.surface.lighter} animation={progress > 0 ? "bouncy" : null} />
       </Progress>
       <View style={styles.mainAreaContainer}>
-        <TouchableWithoutFeedback
-          style={{ flex: 1 }}
-          onPress={() => Keyboard.dismiss()}
-        >
+        <TouchableWithoutFeedback style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
           {mainArea}
         </TouchableWithoutFeedback>
       </View>

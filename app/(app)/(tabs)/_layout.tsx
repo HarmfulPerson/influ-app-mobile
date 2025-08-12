@@ -1,19 +1,23 @@
 import { Tabs } from "expo-router";
-import { StyleSheet } from "react-native";
+import { StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { Text, View } from "tamagui";
-import { useSession } from "../../hooks/session/authenticationProvider";
 import Colors from "../../../constants/Colors";
 import MenuHome from "../../../assets/images/menu-home.svg";
 import MenuSuseu from "../../../assets/images/menu-suseu.svg";
 import { CircleUserRound, MailIcon, SearchIcon } from "lucide-react-native";
 
 export default function TabLayout() {
-  const { signOut } = useSession();
+  const returnStyleWithFocused = (style: StyleProp<ViewStyle>, focused: boolean): StyleProp<ViewStyle>[] => [
+    style,
+    focused && {
+      backgroundColor: Colors.grayscale.surface.subtle,
+    },
+  ];
 
   return (
     <View style={styles.tabsContainer}>
       <Tabs
-        screenOptions={({ route }) => ({
+        screenOptions={() => ({
           tabBarStyle: styles.tabBar,
           tabBarActiveTintColor: Colors.primary.surface.lighter,
           tabBarInactiveTintColor: Colors.grayscale.surface.disabled,
@@ -26,14 +30,7 @@ export default function TabLayout() {
           name="home"
           options={{
             tabBarIcon: ({ color, focused }) => (
-              <View
-                style={[
-                  styles.iconContainer,
-                  focused && {
-                    backgroundColor: Colors.grayscale.surface.subtle,
-                  },
-                ]}
-              >
+              <View style={returnStyleWithFocused(styles.iconContainer, focused)}>
                 <MenuHome width={24} height={24} fill={color} />
                 <Text style={styles.tabBarText}>HOME</Text>
               </View>
@@ -46,14 +43,7 @@ export default function TabLayout() {
           name="search"
           options={{
             tabBarIcon: ({ color, focused }) => (
-              <View
-                style={[
-                  styles.iconContainer,
-                  focused && {
-                    backgroundColor: Colors.grayscale.surface.subtle,
-                  },
-                ]}
-              >
+              <View style={returnStyleWithFocused(styles.iconContainer, focused)}>
                 <SearchIcon width={24} height={24} color={color} />
                 <Text style={styles.tabBarText}>SZUKAJ</Text>
               </View>
@@ -68,14 +58,7 @@ export default function TabLayout() {
             tabBarShowLabel: false,
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
-              <View
-                style={[
-                  styles.iconContainer,
-                  focused && {
-                    backgroundColor: Colors.grayscale.surface.subtle,
-                  },
-                ]}
-              >
+              <View style={returnStyleWithFocused(styles.iconContainer, focused)}>
                 <MenuSuseu height={24} width={24} fill={color} />
                 <Text style={styles.tabBarText}>SUSEU AI</Text>
               </View>
@@ -87,14 +70,7 @@ export default function TabLayout() {
           options={{
             tabBarShowLabel: false,
             tabBarIcon: ({ color, focused }) => (
-              <View
-                style={[
-                  styles.iconContainer,
-                  focused && {
-                    backgroundColor: Colors.grayscale.surface.subtle,
-                  },
-                ]}
-              >
+              <View style={returnStyleWithFocused(styles.iconContainer, focused)}>
                 <MailIcon width={24} height={24} color={color} />
                 <Text style={styles.tabBarText}>CZAT</Text>
               </View>
@@ -106,14 +82,7 @@ export default function TabLayout() {
           name="settings"
           options={{
             tabBarIcon: ({ color, focused }) => (
-              <View
-                style={[
-                  styles.iconContainer,
-                  focused && {
-                    backgroundColor: Colors.grayscale.surface.subtle,
-                  },
-                ]}
-              >
+              <View style={returnStyleWithFocused(styles.iconContainer, focused)}>
                 <CircleUserRound height={24} width={24} color={color} />
                 <Text style={styles.tabBarText}>USTAWIENIA</Text>
               </View>

@@ -5,14 +5,9 @@ export default function AddSocialLayout() {
     <Stack initialRouteName="steps/Start">
       <Stack.Screen name="steps/Start" options={{ headerShown: false }} />
       <Stack.Screen name="steps/CompanyLink" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="steps/PlatformAndInfluencerPick"
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="steps/TitleAndDescription"
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="steps/PlatformAndInfluencerPick" options={{ headerShown: false }} />
+      <Stack.Screen name="steps/TitleAndDescription" options={{ headerShown: false }} />
+      <Stack.Screen name="steps/Activities" options={{ headerShown: false }} />
     </Stack>
   );
 }

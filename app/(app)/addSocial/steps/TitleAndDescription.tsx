@@ -11,8 +11,6 @@ import CustomTextArea from "../../../components/TextArea/TextArea";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import * as yup from "yup";
 import { validate } from "../../../../utils/yup";
-import useAuthPostData from "../../../hooks/usePostAuthData";
-import { URL } from "../../../../constants/urls";
 import CustomModal from "../../../components/ModalPopup/ModalPopup";
 
 type DescriptionData = {
@@ -21,19 +19,12 @@ type DescriptionData = {
 };
 
 const descriptionSchema = yup.object().shape({
-  description: yup
-    .string()
-    .min(3, "Opis powinien mieć conajmniej 3 znaki")
-    .required("Opis jest wymagany"),
-  title: yup
-    .string()
-    .min(3, "Tytuł powinien mieć conajmniej 3 znaki")
-    .required("Tytuł jest wymagany"),
+  description: yup.string().min(3, "Opis powinien mieć conajmniej 3 znaki").required("Opis jest wymagany"),
+  title: yup.string().min(3, "Tytuł powinien mieć conajmniej 3 znaki").required("Tytuł jest wymagany"),
 });
 
 const TitleAndDescription = () => {
   const { pickedCampaign, user, platforms } = useLocalSearchParams();
-  const { postData: createSocial } = useAuthPostData();
   const dummyButton = useRef<any>(null);
 
   const [descriptionData, setDescriptionData] = useState<DescriptionData>({
@@ -45,21 +36,18 @@ const TitleAndDescription = () => {
     title?: string;
   }>({});
 
-  const handleAddSocial = async () => {
+  const handleNavigateNextPage = async () => {
     const errors = await validate(descriptionSchema, descriptionData);
     if (Object.values(errors).length) return setErrors(errors);
-
-    try {
-      const response = await createSocial(URL.social, {
+    router.push({
+      pathname: "addSocial/steps/Activities",
+      params: {
         ...descriptionData,
-        platform: JSON.parse(platforms as string)[0],
-        invitedUserUid: user,
-      });
-
-      if (response?.status === 200) dummyButton.current?.click();
-    } catch (err) {
-      console.log(err);
-    }
+        pickedCampaign,
+        executorUid: user,
+        platforms,
+      },
+    });
   };
 
   const CustomButton = forwardRef((props: any, ref) => {
@@ -90,23 +78,15 @@ const TitleAndDescription = () => {
     <View flex={1}>
       {!!pickedCampaign && (
         <View style={styles.isAddedToCampaignInfoContainer}>
-          <Info
-            width={24}
-            height={24}
-            color={Colors.secondary.surface.lighter}
-          />
+          <Info width={24} height={24} color={Colors.secondary.surface.lighter} />
           <View style={styles.isAddedToCampaignTextContainer}>
-            <Text style={styles.isAddedToCampaignHelperText}>
-              Ta wspolpraca bedzie nalezec do kampanii:
-            </Text>
+            <Text style={styles.isAddedToCampaignHelperText}>Ta wspolpraca bedzie nalezec do kampanii:</Text>
             <Text style={styles.isAddedToCampaignName}>{pickedCampaign}</Text>
           </View>
         </View>
       )}
       <Text style={styles.title}>Podaj nazwę współpracy</Text>
-      <Text style={styles.subtitle}>
-        Wymyśl odpowiednią nazwę dla współpracy
-      </Text>
+      <Text style={styles.subtitle}>Wymyśl odpowiednią nazwę dla współpracy</Text>
       <Input
         label="Tytuł"
         value={descriptionData.title}
@@ -134,36 +114,18 @@ const TitleAndDescription = () => {
         infoMessage={errors.description}
         style={{ flex: 1 }}
       />
-      <CustomModal
-        triggerButton={<CustomButton ref={dummyButton} />}
-        header="Współpraca dodana!"
-        subHeader="Od teraz mozesz dodawać dokumenty oraz zmienić jej status"
-        buttonText="Wróć do strony głównej"
-        buttonClick={() => router.navigate("/")}
-      />
+      <CustomModal triggerButton={<CustomButton ref={dummyButton} />} header="Współpraca dodana!" subHeader="Od teraz mozesz dodawać dokumenty oraz zmienić jej status" buttonText="Wróć do strony głównej" buttonClick={() => router.navigate("/")} />
     </View>
   );
 
   const botttomArea = (
     <View style={styles.navigationButtonsContainer}>
-      <Button
-        variant="secondary"
-        onPress={navigateBack}
-        style={styles.navigationButton}
-        text="Wstecz"
-      />
-      <Button
-        onPress={handleAddSocial}
-        variant="primary"
-        style={styles.navigationButton}
-        text="Dodaj"
-      />
+      <Button variant="secondary" onPress={navigateBack} style={styles.navigationButton} text="Wstecz" />
+      <Button onPress={handleNavigateNextPage} variant="primary" style={styles.navigationButton} text="Dodaj" />
     </View>
   );
 
-  return (
-    <Background mainArea={mainArea} bottomArea={botttomArea} progress={40} />
-  );
+  return <Background mainArea={mainArea} bottomArea={botttomArea} progress={40} />;
 };
 
 export default TitleAndDescription;

@@ -1,0 +1,16 @@
+export const CHAT_EVENTS = {
+  notification: "notification",
+  typing: "typing",
+  chatMessage: "chatMessage",
+  users: "users",
+  userJoin: "userJoin",
+  userDisconnect: "userDisconnect",
+  updateSeen: "updateSeen",
+  openChat: "openChat",
+  closeChat: "closeChat",
+  getChats: "getChats",
+  getMoreMessages: "getMoreMessages",
+  getEachChatroom: "getEachChatroom",
+  addUsersToChatroom: "addUsersToChatroom",
+  newChat: "newChat",
+} as const;

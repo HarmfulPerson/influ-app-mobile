@@ -1,20 +1,11 @@
-import {
-  Circle,
-  ScrollView,
-  Text,
-  View,
-  Button as TamaguiButton,
-} from "tamagui";
+import { Circle, ScrollView, Text, View, Button as TamaguiButton } from "tamagui";
 import Background from "../common/background";
 import { styles } from "../styles/summary";
 import Button from "../../../components/Button/Button";
 import { router, useLocalSearchParams } from "expo-router";
 import { ImageBackground, TouchableOpacity } from "react-native";
 import FilterDisplayer from "../../../components/FilterDisplayer/FilterDisplayer";
-import {
-  navigateBack,
-  parseBooleanStringToBoolean,
-} from "../../../../utils/utils";
+import { navigateBack, parseBooleanStringToBoolean } from "../../../../utils/utils";
 import useAuthPostData from "../../../hooks/usePostAuthData";
 import { URL } from "../../../../constants/urls";
 import { SocialRange } from "../../../types/social";
@@ -24,18 +15,7 @@ import { useSession } from "../../../hooks/session/authenticationProvider";
 import { Category } from "../../../types/category";
 
 export default function Summary() {
-  const {
-    advertisementCategories,
-    title,
-    description,
-    date,
-    isPublishedByAdvertiser,
-    neededSocials,
-    sexes,
-    ageMin,
-    ageMax,
-    socialRanges,
-  } = useLocalSearchParams();
+  const { advertisementCategories, title, description, date, isPublishedByAdvertiser, neededSocials, sexes, ageMin, ageMax, socialRanges } = useLocalSearchParams();
   const { postData: createAdvertisement } = useAuthPostData();
   const { session } = useSession();
   const dummyButton = useRef<any>(null);
@@ -45,9 +25,7 @@ export default function Summary() {
     ageMax: +(ageMax as string),
     advertisementSocialRanges: JSON.parse(socialRanges as string),
     categories: JSON.parse(advertisementCategories as string),
-    isPublishedByAdvertiser: parseBooleanStringToBoolean(
-      isPublishedByAdvertiser as string
-    ),
+    isPublishedByAdvertiser: parseBooleanStringToBoolean(isPublishedByAdvertiser as string),
     neededSocials: (neededSocials as string)?.split(","),
     startDate: new Date(date as string),
     title: title,
@@ -81,11 +59,9 @@ export default function Summary() {
   const handleAddAdvertisement = async () => {
     const response = await createAdvertisement(URL.advertisement, {
       ...filters,
-      advertisementSocialRanges: filters.advertisementSocialRanges.map(
-        (socialRange: SocialRange) => ({
-          socialRangeUid: socialRange.uid,
-        })
-      ),
+      advertisementSocialRanges: filters.advertisementSocialRanges.map((socialRange: SocialRange) => ({
+        socialRangeUid: socialRange.uid,
+      })),
       advertisementCategories: filters.categories.map((category: Category) => ({
         influencerCategoryUid: category.uid,
       })),
@@ -99,17 +75,14 @@ export default function Summary() {
       <View style={styles.container}>
         <View style={styles.subHeaderContainer}>
           <Circle width={48} height={48} style={styles.avatarCircle}>
-            <ImageBackground
-              style={styles.avatarDisplayer}
-              source={require("../../../../assets/images/menu-user-gopher.png")}
-            />
+            <ImageBackground style={styles.avatarDisplayer} source={require("../../../../assets/images/menu-user-gopher.png")} />
           </Circle>
         </View>
         <View style={styles.companyAndTitleContainer}>
-          <Text style={styles.companyNameText}>
-            {session.data.userData.nameOfCompany}
+          <Text style={styles.companyNameText}>{session.data.userData.nameOfCompany}</Text>
+          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.titleText}>
+            {title}
           </Text>
-          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.titleText}>{title}</Text>
         </View>
       </View>
       <FilterDisplayer filters={filters} />
@@ -118,34 +91,16 @@ export default function Summary() {
           <Text style={styles.descriptionText}>{description}</Text>
         </ScrollView>
       </View>
-      <CustomModal
-        triggerButton={<CustomButton ref={dummyButton} />}
-        header="Ogłoszenie dodane!"
-        subHeader="Od teraz mozesz przyjmowac zgloszenia!"
-        buttonText="Wróć do strony głównej"
-        buttonClick={() => router.navigate("/")}
-      />
+      <CustomModal triggerButton={<CustomButton ref={dummyButton} />} header="Ogłoszenie dodane!" subHeader="Od teraz mozesz przyjmowac zgloszenia!" buttonText="Wróć do strony głównej" buttonClick={() => router.navigate("/")} />
     </>
   );
 
   const botttomArea = (
     <View style={styles.navigationButtonsContainer}>
-      <Button
-        variant="secondary"
-        onPress={navigateBack}
-        style={styles.navigationButton}
-        text="Wstecz"
-      />
-      <Button
-        variant="primary"
-        style={styles.navigationButton}
-        onPress={() => handleAddAdvertisement()}
-        text="Dodaj"
-      />
+      <Button variant="secondary" onPress={navigateBack} style={styles.navigationButton} text="Wstecz" />
+      <Button variant="primary" style={styles.navigationButton} onPress={() => handleAddAdvertisement()} text="Dodaj" />
     </View>
   );
 
-  return (
-    <Background mainArea={mainArea} bottomArea={botttomArea} progress={100} />
-  );
+  return <Background mainArea={mainArea} bottomArea={botttomArea} progress={100} />;
 }
